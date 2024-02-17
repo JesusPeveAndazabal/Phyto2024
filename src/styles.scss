@@ -1,0 +1,215 @@
+html, body {
+    margin: 0;
+    padding: 0;
+
+    height: 100vh;
+    font-family: var(--font-family);
+    background-color: #eee;
+    color: var(--text-color);
+}
+.swal2-timer-progress-bar {
+  background: #2196f3; /* Reemplaza 'tu-color-aqui' con el color deseado */
+}
+.p-button-icon{
+    font-size: inherit !important;
+}
+// @media only screen and (min-width: 768px) and (min-height: 768px):host {
+//     --width: 950px;
+//     --height: 600px;
+// }
+
+/*
+ * App Global CSS
+ * ----------------------------------------------------------------------------
+ * Put style rules here that you want to apply globally. These styles are for
+ * the entire app and not just one component. Additionally, this file can be
+ * used as an entry point to import other CSS/Sass files to be included in the
+ * output CSS.
+ * For more information on global stylesheets, visit the documentation:
+ * https://ionicframework.com/docs/layout/global-stylesheets
+ */
+
+/* Core CSS required for Ionic components to work properly */
+@import "@ionic/angular/css/core.css";
+
+/* Basic CSS for apps built with Ionic */
+@import "@ionic/angular/css/normalize.css";
+@import "@ionic/angular/css/structure.css";
+@import "@ionic/angular/css/typography.css";
+@import '@ionic/angular/css/display.css';
+
+/* Optional CSS utils that can be commented out */
+@import "@ionic/angular/css/padding.css";
+@import "@ionic/angular/css/float-elements.css";
+@import "@ionic/angular/css/text-alignment.css";
+@import "@ionic/angular/css/text-transformation.css";
+@import "@ionic/angular/css/flex-utils.css";
+
+/* PrimeNG styles */
+@import "primeicons/primeicons.css";
+@import "primeng/resources/themes/lara-light-blue/theme.css";
+@import "primeng/resources/primeng.css";
+@import "primeflex/primeflex.css";
+@import 'primeng/resources/primeng.min.css';
+
+// @import 'primeicons/primeicons.css';
+// @import 'primeng/resources/themes/nova-light/theme.css'; /* Puedes elegir otro tema si lo prefieres */
+// @import 'primeng/resources/primeng.min.css';
+/*The next styles be here because the SVG styles dont work in component styles file*/
+
+/*Speedometer styles */
+.svg-gauge{
+    margin: auto;
+    width: 100%;
+}
+.unselectable {
+    -moz-user-select: -moz-none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    font-size: 25pt;
+}
+
+.panel-gauge{
+    margin: auto;
+    width: fit-content;
+}
+
+/* css formats for the gauge */
+.gauge {
+    .domain {
+        stroke-width: 2px;
+        stroke: #fff;
+    }
+    .tick line {
+        stroke: #fff;
+        stroke-width: 2px;
+    }
+    line {
+        stroke: #fff;
+    }
+    .major {
+        fill: #fff;
+        font-size: 20px;
+        font-family: 'Play', verdana, sans-serif;
+        font-weight: normal;
+    }
+    .arc, .cursor {
+        opacity: 0;
+    }
+    .indicator {
+        stroke: #00ffbf;
+        fill: #000;
+        stroke-width: 5px;
+    }
+
+    .ok {
+        fill: green;
+        opacity: 0.8;
+    }
+
+    .warning {
+        fill: yellow;
+        opacity: 0.8;
+    }
+
+    .fault {
+        fill: red;
+        opacity: 0.8;
+    }
+}
+
+/* css formats for the segment display */
+.segdisplay{
+    .on {
+        fill: #00FFFF;
+    }
+    .off {
+        fill: #00ffff;
+        opacity: 0.04;
+    }
+}
+
+.weight-ok{
+    fill:#1eff00 !important;
+    //fill:green !important;
+}
+
+.indicator-ok {
+    stroke: #1eff00 !important;
+    //stroke: green !important;
+}
+/* End Speedometer styles */
+
+/* Humidity styles */
+.panel-donut{
+    margin: auto;
+    width: fit-content;
+}
+
+.svg-thermometer{
+    margin: auto;
+    width: 100%;
+}
+
+path.color0 {
+	fill: green;
+}
+
+path.color1 {
+	fill: #3f6b35;
+}
+/* End Humidity styles */
+
+.svg-components{
+    max-height: calc(calc(100vh/2) - 75px);
+    margin: auto;
+}
+
+.half-svg-components{
+    max-height: calc(calc(100vh/4) - 40px);
+    margin: auto;
+}
+
+.panel-water-flow{
+    margin: auto;
+    width: fit-content;
+}
+
+
+.svg-pressure{
+    width: 100%;
+}
+
+.p-orderlist-controls{
+    display: none !important;
+}
+
+.p-orderlist .p-orderlist-list .p-orderlist-item{
+    padding: 0.15rem 0.50rem !important;
+}
+
+.full-dropdown{
+    display: grid;
+    width: 100%;
+    .p-dropdown{
+        width: calc(100% - .4rem);
+    }
+}
+
+
+ion-alert.select-alert.single-select-alert{
+    --max-width: 50% !important;
+
+    .alert-wrapper{
+        width: 100% !important;
+    }
+}
+
+.modal-container {
+  .custom-modal {
+    width: 80% !important;
+    height: 80% !important;
+  }
+}

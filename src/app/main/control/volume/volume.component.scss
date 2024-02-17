@@ -1,0 +1,279 @@
+
+
+:root{
+  --water-level: 40%;
+}
+.circle{
+    position: absolute;
+    top:40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: min(32vw,55vh) ;
+    height: min(32vw,55vh) ;
+    //background: #ccc;
+    border: 5px solid #4973ff;
+    border-radius: 50%;
+    overflow: hidden;
+    z-index: 9999999;
+    aspect-ratio: 1;
+}
+
+.blink-red {
+  background-color: rgb(173, 3, 3);
+  animation: blink-animation 1s infinite alternate;
+  position: absolute;
+  top:40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(32vw,55vh) ;
+  height: min(32vw,55vh) ;
+  //background: #ccc;
+  border: 5px solid #4973ff;
+  border-radius: 50%;
+  overflow: hidden;
+  z-index: 9999999;
+  aspect-ratio: 1;
+}
+
+@keyframes blink-animation {
+  from {
+    background-color: transparent;
+  }
+  to {
+    background-color: rgb(173, 3, 3);
+  }
+}
+
+#volume-info{
+    position: absolute;
+    top:40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: min(47vw,75vh) ;
+    height: min(47vw,75vh) ;
+    aspect-ratio: 1;
+}
+
+#output-controls{
+    position: absolute;
+    top:93%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.wave{
+    position: absolute;
+    bottom : 0;
+    left:0;
+    width: 100%;
+
+    height: 5%;
+    mask: url("../../../../assets/images/wave2.png");
+    mask-size: 1000px 100%;
+    mask-position: 100% 100%;
+    //mask-repeat: repeat-x;
+    //filter: hue-rotate(180deg);
+    //border-radius: 50%;
+    //box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.5);
+}
+
+.wave.wave1{
+    animation: animate1 2s linear infinite;
+    z-index: 1000;
+    opacity: 1;
+    bottom: 0;
+    background: #4973ff;
+    //animation-delay: 1s;
+}
+
+.wave.wave2{
+    animation: animate1 2s linear infinite;
+    z-index: 999;
+    opacity: 1;
+    bottom: 0;
+    background: #7c93de;
+    animation-delay: 1s;
+}
+
+@keyframes animate1{
+    0%{
+        mask-position: 0px 0;
+    }
+    100%{
+        mask-position: 1000px 0;
+    }
+}
+
+
+path {
+    fill: transparent;
+  }
+
+text {
+    fill: #000000;
+}
+
+/*  */
+
+@import "bourbon/app/assets/stylesheets/bourbon";
+$button-background-color:       #16638c;
+$button-background-color-hover: #888;
+$button-text-color:             #fff;
+$button-border-color:           #244c69;
+$button-border-color-hover:     #000;
+$button-border-width:           4px;
+$button-border-radius:          3px;
+$button-separation:             50px;
+$button-height:                 100px;
+$button-horizontal-padding:     10px;
+$button-chevron-skew:           30deg;
+$button-chevron-skew-left:      330deg;
+$button-chevron-edge-tweak:     5px;
+$button-font-size:              40px;
+/*  adjust $button-chevron-edge-tweak as you change
+    $button-chevron-skew in order to render the rounded
+    corners properly. There doesn't appear to be a (simple)
+    consistent mathematical relationship between the two
+    that could be used to change it automatically. */
+
+/* ================================================== */
+/* Button Styles ==================================== */
+/* ================================================== */
+.button-group {
+  @include clearfix;
+  //background: #ddd; //just to show that container backgrounds work as expected
+  position: relative;
+}
+
+.button{
+  display: block;
+  float: left;
+  background-color: $button-background-color;
+  border: $button-border-width solid $button-border-color;
+  margin: 0 $button-separation/2;
+  padding: 0 $button-horizontal-padding;
+  height: $button-height;
+  width: 100px;
+  line-height: $button-height;
+  border-radius: $button-border-radius;
+  color: $button-border-color;
+  outline: none;
+  @include transform (translate3d(0,0,0)); // fix blur on hi-dip displays caused by drop-shadow filter
+  font-size: $button-font-size;
+
+  &:first-child { margin-left: 0; }
+  &:last-child { margin-right: 0; }
+
+  &:hover {
+    filter: drop-shadow(0 1px 1px rgba(#000, 0.25));
+    border-color: $button-border-color-hover;
+    background-color: $button-background-color-hover;
+  }
+
+  // &:focus {
+  //   filter: drop-shadow(0 0 2px rgba(blue, 0.5)); // need to work on this, as drop-shadow filter won't work in most browsers
+  // }
+
+  .button-group.chevrons & {
+    background: none;
+    border: none;
+    position: relative;
+    margin-top: $button-border-width;
+    margin-bottom: $button-border-width;
+    height: $button-height - ($button-border-width * 2);
+    line-height: $button-height - ($button-border-width * 2);
+    z-index: 1; // make psuedo element backgrounds sit above parent background
+
+    &:before,
+    &:after {
+      content: "";
+      position: absolute;
+
+      left: 0;
+      right: 0;
+      z-index: -1; // make psuedo element backgrounds sit behind button content
+      border: $button-border-width solid $button-border-color;
+    }
+
+    &:before {
+      top: -$button-border-width;
+      bottom: 50%;
+      border-bottom: none;
+      border-radius: $button-border-radius $button-border-radius 0 0;
+      transform: skewX($button-chevron-skew);
+    }
+
+    &:after {
+      top: 50%;
+      bottom: -#{$button-border-width};
+      border-top: none;
+      border-radius: 0 0 $button-border-radius $button-border-radius;
+      transform: skewX(-$button-chevron-skew);
+    }
+
+  }
+
+  &.selected:before,
+  &.selected:after {
+    background-color: $button-background-color;
+  }
+
+  &.selected{
+    color: white;
+  }
+}
+.button-group.chevrons .left{
+  &:before {
+    transform: skewX($button-chevron-skew-left);
+  }
+
+  &:after {
+    transform: skewX(-$button-chevron-skew-left);
+  }
+}
+
+
+ion-icon {
+  font-size: $button-font-size;
+}
+
+
+#water {
+  background-color: blue;
+  height: 0;
+  transition: height 0.5s ease;
+  animation: fillWater 2s infinite alternate;
+
+  position: absolute;
+  top:40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(32vw,55vh) ;
+  height: min(32vw,55vh) ;
+  overflow: hidden;
+  z-index: 9999999;
+}
+
+@keyframes fillWater {
+  0% {
+    height: 0;
+    transform: translateX(0);
+  }
+  50% {
+    height: calc(40% + 10%);
+    transform: translateX(5%);
+  }
+  100% {
+    height: 40%;
+    transform: translateX(0);
+  }
+}
+
+#animation-frame{
+  position: absolute;
+  top:40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(32vw,55vh) ;
+  height: min(32vw,55vh) ;
+}

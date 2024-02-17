@@ -1,0 +1,90 @@
+<nav class="navbar bg-body-tertiary">
+  <div class="container">
+    <span class="navbar-brand mb-0 h1">Parámetros de trabajo</span>
+  </div>
+</nav>
+
+<div class="container mt-1">
+
+  <form [formGroup]="formData" (submit)="save()" class="mt-4">
+    <div class="form-group row">
+      <label for="api_server" class="col-sm-2 col-form-label">API/REST server:</label>
+      <div class="col-sm-10">
+        <input type="url" class="form-control" id="api_server" formControlName="api_server" placeholder="https://example.com">
+        <small class="form-text text-muted">Servidor cloud principal</small>
+      </div>
+    </div>
+    <div class="form-group row">
+      <label for="vol_alert_on" class="col-sm-2 col-form-label">Volumen mínimo (L):</label>
+      <div class="col-sm-10">
+        <input type="number" class="form-control" id="vol_alert_on" formControlName="vol_alert_on" placeholder="100">
+        <div id="textoo" class="form-text">
+          Cuando el volumen de agua llegue al mínimo se pausará el trabajo y deberá recargar
+        </div>
+      </div>
+    </div>
+    <hr style="background-color:black;">
+    <div class="row mt-2">
+      <div class="col-md-4">
+        <div class="form-group row">
+          <label for="rango_caudal" class="col-sm-12 col-form-label">Rangos del caudal (L/min):</label>
+          <div class="col-sm-10">
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="form-group row">
+          <label for="min_wflow" class="col-sm-4 col-form-label">Mínimo:</label>
+          <div class="col-sm-6">
+            <input type="number" class="form-control" formControlName="min_wflow" placeholder="10">
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="form-group row">
+          <label for="max_wflow" class="col-sm-4 col-form-label">Máximo:</label>
+          <div class="col-sm-6">
+            <input type="number" class="form-control" formControlName="max_wflow" placeholder="17">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row mt-3">
+      <div class="col-md-3">
+        <div class="form-group row">
+          <label for="rango_presion" class="col-sm-12 col-form-label">Rangos de presión:</label>
+          <div class="col-sm-10">
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="form-group row">
+          <label for="unit_pressure" class="col-sm-7 col-form-label">Unidad de medida:</label>
+          <select formControlName="unit_pressure" class="form-select col-sm-3">
+            <option selected>U.M.</option>
+            <option *ngFor="let item of pressure_items" [value]="item.value">{{ item.name }}</option>
+          </select>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="form-group row">
+          <label for="min_pressure" class="col-sm-4 col-form-label">Mínimo:</label>
+          <div class="col-sm-6">
+            <input type="number" class="form-control" formControlName="min_pressure" placeholder="10">
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="form-group row">
+          <label for="max_pressure" class="col-sm-4 col-form-label">Máximo:</label>
+          <div class="col-sm-6">
+            <input type="number" class="form-control" formControlName="max_pressure" placeholder="17">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <button type="button" class="btn btn-secondary btn-block mt-3" (click)="save()">Verificar y guardar</button>
+  </form>
+</div>

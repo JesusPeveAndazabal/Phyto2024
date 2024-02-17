@@ -1,0 +1,88 @@
+<ion-content [fullscreen]="true" class="main-container">
+  <router-outlet ></router-outlet>
+<ion-footer [translucent]="true" style="z-index: 1;">
+  <ion-toolbar class="toolbar-menu p-0">
+    <ion-grid class="p-0 grid-footer ">
+      <ion-row class="ion-justify-content-between ">
+        <ion-col size="4" class="left-menu py-menu">
+          <div class="flex flex-row justify-content-between px-6">
+            <ion-fab-button shape="round" size="small" class="m-0" [ngClass]="currentRoute != '/main/control'? 'unselected-fab-button':'selected-fab-button' " [routerLink]="['/main/control']">
+              <span class="pi pi-home"></span>
+            </ion-fab-button>
+            <ion-fab-button *ngIf="canStart" shape="round" size="small" class="m-0" [ngClass]="currentRoute != '/main/gps'? 'unselected-fab-button':'selected-fab-button' " [routerLink]="['/main/gps']">
+              <span class="pi pi-send"></span>
+            </ion-fab-button>
+            <ion-fab-button shape="round" size="small" class="m-0" [ngClass]="currentRoute != '/main/settings'? 'unselected-fab-button':'selected-fab-button' " [routerLink]="['/main/settings']">
+              <span class="pi pi-wrench"></span>
+            </ion-fab-button>
+          </div>
+        </ion-col>
+        <ion-col>
+          <div class="w-full h-full"></div>
+        </ion-col>
+
+        <ion-col size="4" class="right-menu py-menu">
+          <div class="flex flex-row justify-content-between px-6">
+            <ion-fab-button shape="round" size="small"
+              *ngIf="canStart"
+              (mousedown)="onStartListenPower($event)"
+              (mouseup)="onEndListenPower($event)"
+              (touchstart)="onStartListenPower($event)"
+              (touchend)="onEndListenPower($event)"
+              (click)="onClickPower()"
+              [ngClass]="classButtonPower" class="m-0">
+              <span class="pi pi-power-off"></span>
+            </ion-fab-button>
+
+            <ion-fab-button id="person-button" shape="round" size="small" class="m-0">
+              <span class="pi pi-user"></span>
+            </ion-fab-button>
+
+            <ion-modal #modalInfo id="modal-info" trigger="person-button" triggerAction="click">
+              <ng-template>
+                <ion-content class="">
+                  <ion-toolbar color="primary">
+                    <ion-title>Información de la aplicación</ion-title>
+                    <ion-buttons slot="end">
+                      <ion-button *ngIf="!lastWorkExecution" color="light" (click)="modalInfo.dismiss();cerrarSesion()">Cerrar sesión</ion-button>
+                      <ion-button color="light" (click)="modalInfo.dismiss()">Cerrar</ion-button>
+                    </ion-buttons>
+                  </ion-toolbar>
+                  <ion-list>
+                    <ion-list-header>
+                      <ion-label>Datos del operador</ion-label>
+                    </ion-list-header>
+                    <ion-item>
+                      <ion-label>Código / DNI</ion-label>
+                      <ion-label>{{ login.id_op}} / {{ login.document_op }}</ion-label>
+                    </ion-item>
+                    <ion-item>
+                      <ion-label>Nombres completos</ion-label>
+                      <ion-label>{{ login.fullname_op }}</ion-label>
+                    </ion-item>
+                  </ion-list>
+
+                  <ion-list>
+                    <ion-list-header>
+                      <ion-label>Datos del supervisor</ion-label>
+                    </ion-list-header>
+                    <ion-item>
+                      <ion-label>Código / DNI</ion-label>
+                      <ion-label>{{ login.id_sup }} / {{ login.document_sup }}</ion-label>
+                    </ion-item>
+                    <ion-item>
+                      <ion-label>Nombres completos</ion-label>
+                      <ion-label>{{ login.fullname_sup }}</ion-label>
+                    </ion-item>
+                  </ion-list>
+                </ion-content>
+              </ng-template>
+            </ion-modal>
+
+          </div>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </ion-toolbar>
+</ion-footer>
+</ion-content>

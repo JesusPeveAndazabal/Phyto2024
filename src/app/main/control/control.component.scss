@@ -1,0 +1,108 @@
+.control-grid{
+  margin-bottom: 10px;
+}
+
+.humidity-section{
+  top: 0;
+}
+
+.speedometer-section{
+
+  bottom: 0;
+}
+
+.flow-section{
+
+  top: 0;
+}
+.pressure-section{
+
+  bottom: 0;
+}
+
+.section-control{
+  position: absolute;
+  height: calc(calc(100vh/2) - 37.5px);
+  width: calc(100% - 10px);
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.component-control {
+  //height: calc(calc(100vh/2) - 50px);
+  height: 100%;
+  width: 100%;
+  background-color: rgba(12, 59, 154, 0.279);
+
+  &.bg-fade-red{
+      animation: fade-red 2s forwards;
+  }
+
+  //background: transparent;
+  // position: relative;
+  //text-align: center;
+  //padding: 10px;
+
+}
+
+.section-control:before {
+  content: "";
+  position: absolute;
+  border-bottom: 10px solid rgba(12, 59, 154, 0.511);
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  //border-top: 9px solid green;
+  top: 0;
+  left: 0;
+  width: calc(100% - 20px);
+  height: 0;
+
+
+}
+
+.section-control:after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  border-top: 10px solid rgba(12, 59, 154, 0.511);
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  width: calc(100% - 20px);
+  height: 0;
+
+
+}
+
+
+@keyframes fade-red {
+  from { background-color:rgba(214, 16, 0, 1);}
+  to { background-color:rgba(12, 59, 154, 0.279);}
+}
+
+
+
+
+
+// /* For demo purposes */
+// #octagon span {
+//     height:42px;
+//     width:100%;
+//     margin: 29px 0 0 0;
+//     display: inline-block;
+//     line-height: 42px;
+//     background:red;
+// }
+.blink-red {
+  background-color: rgba(173, 3, 3, 0.41);
+  animation: blink-animation 1s infinite alternate;
+}
+
+@keyframes blink-animation {
+  from {
+    background-color: transparent;
+  }
+  to {
+    background-color: rgba(173, 3, 3, 0.41);
+  }
+}

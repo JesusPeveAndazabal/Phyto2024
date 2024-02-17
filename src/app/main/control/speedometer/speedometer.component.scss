@@ -1,0 +1,9 @@
+:host{
+  height: 100%;
+  display: flex;
+}
+
+.container1 {
+  width: 80%; /* Ancho del contenedor */
+  box-sizing: border-box; /* Incluir bordes y relleno en el ancho total */
+}

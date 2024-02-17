@@ -1,0 +1,14 @@
+:host{
+  height: 100%;
+  display: flex;
+}
+
+@keyframes fade-red {
+  from {background-color:rgba(214, 16, 0, 1);}
+  to {background-color:rgba(214, 16, 0, 0);}
+}
+
+.bg-fade-red-tr{
+  animation: fade-red 2s forwards;
+  background-color:rgba(214, 16, 0, 1);
+}

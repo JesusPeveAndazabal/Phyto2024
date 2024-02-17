@@ -1,0 +1,20 @@
+.right-value-text{
+  text-align: right !important;
+}
+
+.error-message{
+  // display: block;
+  // text-align: right;
+  // width: 100%;
+  // color: red;
+
+  display: block;
+  text-align: right;
+  width: 100%;
+  color: red;
+  margin-top: -20px;
+  position: absolute;
+  z-index: 999;
+  padding-right: 45px;
+  font-size: 10pt;
+}

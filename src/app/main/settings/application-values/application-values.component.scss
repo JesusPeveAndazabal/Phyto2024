@@ -1,0 +1,11 @@
+.p-orderlist-controls{
+  display: none !important;
+}
+
+ion-content::part(scroll) {
+  //top: - 70px;
+  top: calc((var(--offset-top) + 20px) * -1);
+
+}
+
+

@@ -1,0 +1,62 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button color="medium" (click)="cancel()">Cancelar</ion-button>
+    </ion-buttons>
+    <ion-title class="text-center">Acerca de la aplicación</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="confirm()" [strong]="true">Confirmar</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+<ion-content class="ion-padding">
+  <form [formGroup]="formData">
+    <ion-item>
+      <ion-select #select_farm formControlName="farm" label="Fundo" aria-label="Fundo" interface="popover" placeholder="Elegir fundo..." legacy="false" (ionChange)="farmSelected($event)">
+        <ion-select-option *ngFor="let farm of farms" value="{{farm.id}}">{{farm.name}}</ion-select-option>
+      </ion-select>
+    </ion-item>
+    <span class="error-message" *ngIf="isSubmitted && formData.controls['farm'].errors?['required'] : null">
+      Debe elegir el fundo.
+    </span>
+    <ion-item [button]="true" [detail]="false">
+      <select-filter
+        formControlName="lot"
+        [multiple]="false"
+        [options]="lotOptions"
+        modalTitle="Seleccionar lote"
+        labelText="Lote"
+      ></select-filter>
+    </ion-item>
+    <span class="error-message" *ngIf="isSubmitted && formData.controls['lot'].errors?['required'] : null">
+      Debe elegir el lote.
+    </span>
+    <ion-item>
+      <ion-select #select_cultivation formControlName="cultivation" label="Cultivo" aria-label="Cultivo" interface="popover" placeholder="Elegir cultivo...">
+        <ion-select-option *ngFor="let cultivation of cultivations" value="{{cultivation.id}}">{{cultivation.name}}</ion-select-option>
+      </ion-select>
+    </ion-item>
+    <ion-item>
+      <ion-select #select_product formControlName="product" label="Producto" aria-label="Producto" interface="popover" placeholder="Elegir producto...">
+        <ion-select-option *ngFor="let product of products" value="{{product.id}}">{{product.name}}</ion-select-option>
+      </ion-select>
+    </ion-item>
+    <span class="error-message" *ngIf="isSubmitted && formData.controls['product'].errors?['required'] : null">
+      Debe elegir el producto de la aplicación.
+    </span>
+    <ion-item>
+      <ion-input formControlName="hectare" aria-label="Hectáreas" label="Hectáreas" type="number" placeholder="0" class="right-value-text"></ion-input>
+    </ion-item>
+    <span class="error-message" *ngIf="isSubmitted && formData.controls['hectare'].errors?['required'] : null">
+      Debe digitar las hectáreas.
+    </span>
+    <ion-item>
+      <ion-select #select_work formControlName="work" label="Labor" aria-label="Labor" interface="popover" placeholder="Elegir labor...">
+        <ion-select-option *ngFor="let work of works" value="{{work.id}}">{{work.name}}</ion-select-option>
+      </ion-select>
+    </ion-item>
+    <span class="error-message" *ngIf="isSubmitted && formData.controls['work'].errors?['required'] : null">
+      Debe elegir la labor a realizar.
+    </span>
+  </form>
+</ion-content>

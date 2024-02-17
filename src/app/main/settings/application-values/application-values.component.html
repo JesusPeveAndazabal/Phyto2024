@@ -1,0 +1,129 @@
+
+<ion-header>
+  <div class="row p-2">
+    <div class="col-md-4 mt-2 mb-1">
+      <button pButton type="button" (click)="cancel()" label="CANCELAR" style="color: rgb(127, 127, 127); background-color:white;border:none;"></button>
+    </div>
+    <div class="col-md-4 mb-1" style="margin-top:-5px; color: rgb(88, 88, 88)">
+      <h4 class="text-center">Valores de trabajo</h4>
+    </div>
+    <div class="col-md-4 mt-2 mb-1 text-right">
+      <button pButton type="button" (click)="confirm()" label="CONFIRMAR" style="color: black; background-color:white;border:none;"></button>
+    </div>
+  </div>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+  <ion-grid class="h-full">
+    <ion-row>
+      <ion-col size="5">
+        <form [formGroup]="formData">
+          <div class="flex flex-column pt-4 gap-3">
+            <div class="grid">
+              <div class="col-5">
+                <label class="mb-1 block font-bold" for="horizontal">Unidad</label>
+                <p-dropdown [ngClass]="isSubmitted && formData.controls['unit'].errors ? 'ng-invalid ng-dirty' : ''"
+                  formControlName="unit" [options]="unitsPressure" class="full-dropdown" optionLabel="name" optionValue="value" placeholder="Elegir"
+                  (onChange)="changeUnit($event)">
+                </p-dropdown>
+              </div>
+              <div class="col-7 ">
+                <label class="mb-1 block font-bold" for="horizontal">Presión</label>
+                <select formControlName="pressure" placeholder="Seleccionar tipo" fill="outline" class="form-select" style="min-height: 45px;">
+                  <option *ngFor="let item of pressures_items" [value]="item.value">{{ item.label }}</option>
+                </select>
+                <small  *ngIf="isSubmitted && handleError('pressure','required')" class="p-error">
+                  Este campo es requerido
+                </small>
+                <small  *ngIf="isSubmitted && handleError('pressure','min')" class="p-error">
+                  El valor no es válido
+                </small>
+              </div>
+            </div>
+            <div class="flex-auto">
+              <label class="mb-1 block font-bold" for="horizontal">Ancho (m)</label>
+              <p-inputNumber [ngClass]=" isSubmitted && formData.controls['width'].errors ? 'ng-invalid ng-dirty' : ''"
+                formControlName="width" [showButtons]="true" buttonLayout="horizontal" inputId="horizontal" spinnerMode="horizontal" [step]="0.1"
+                decrementButtonClass="p-button-danger" incrementButtonClass="p-button-success" [min]="0" locale="es-PE" [minFractionDigits]="2"
+                incrementButtonIcon="pi pi-plus" decrementButtonIcon="pi pi-minus" [inputStyle]="{'width': 'calc(100% - 6rem)'}">
+              </p-inputNumber>
+              <small  *ngIf="isSubmitted && handleError('width','required')" class="p-error">
+                Este campo es requerido
+              </small>
+              <small  *ngIf="isSubmitted && handleError('width','min')" class="p-error">
+                El valor no es válido
+              </small>
+            </div>
+            <div class="flex-auto">
+              <label class="mb-1 block font-bold">Velocidad (Km/h)</label>
+              <p-inputNumber [ngClass]=" isSubmitted && formData.controls['speed'].errors ? 'ng-invalid ng-dirty' : ''"
+                formControlName="speed" [showButtons]="true" buttonLayout="horizontal" inputId="horizontal" spinnerMode="horizontal" [step]="0.1"
+                decrementButtonClass="p-button-danger" incrementButtonClass="p-button-success" [min]="0" locale="es-PE" [minFractionDigits]="2"
+                incrementButtonIcon="pi pi-plus" decrementButtonIcon="pi pi-minus" [inputStyle]="{'width': 'calc(100% - 6rem)'}">
+              </p-inputNumber>
+              <small  *ngIf="isSubmitted && handleError('speed','required')" class="p-error">
+                Este campo es requerido
+              </small>
+              <small  *ngIf="isSubmitted && handleError('speed','min')" class="p-error">
+                El valor no es válido
+              </small>
+            </div>
+          </div>
+        </form>
+      </ion-col>
+
+      <ion-col size="7">
+        <div class="flex flex-row align-items-center gap-2">
+          <ion-input [(ngModel)]="quantity" style="min-height: 40px;" placeholder="0" type="number" fill="outline"></ion-input>
+          <ion-select [(ngModel)]="type" style="min-height: 40px;" placeholder="Seleccionar tipo" fill="outline">
+            <ion-select-option *ngFor="let type of nozzleTypes" value="{{type.id}}">{{type.name}}</ion-select-option>
+          </ion-select>
+          <ion-button (click)="addNozzles()">
+            <i class="bi bi-plus-circle-fill"></i>
+            &nbsp; Agregar boquillas
+          </ion-button>
+        </div>
+        <!-- The reorder gesture is disabled by default, enable it to drag and drop items -->
+        <!-- Casting $event to $any is a temporary fix for this bug https://github.com/ionic-team/ionic-framework/issues/24245 -->
+        <p-orderList (onReorder)="handleReorder()" [value]="nozzleConfig" [listStyle]="{ 'max-height': '68vh','padding': '0' }" [dragdrop]="false">
+          <ng-template let-item  pTemplate="item">
+            <ion-item id="row_{{ item.number }}">
+              <div class="w-full flex  align-items-center justify-content-between">
+                <label> N° {{ item.number }} </label>
+
+                <select [(ngModel)]="item.type" (change)="updateSummary($event)">
+                  <option *ngFor="let type of nozzleTypes" value="{{type.id}}">{{type.name}}</option>
+                </select>
+                <select [(ngModel)]="item.color" (change)="updateSummary($event)">
+                  <option *ngFor="let item of nozzleColors" value="{{item.id}}">
+                    <div [style.width.px]="60" [style.height.px]="18" [style.backgroundColor]="getColorCode(item.id)"></div>
+                    <div [style.width.px]="100" [style.height.px]="18" [style.backgroundColor]="item.code">{{ item.name }}</div>
+                  </option>
+                </select>
+                <!-- <p-dropdown [options]="nozzleColors" [(ngModel)]="item.color" optionLabel="code" optionValue="id" placeholder="Elija color" appendTo="body" (onChange)="updateSummary($event)">
+                  <ng-template pTemplate="selectedItem">
+                    <div [style.width.px]="60" [style.height.px]="18" [style.backgroundColor]="getColorCode(item.color)"></div>
+                  </ng-template>
+                  <ng-template let-color pTemplate="item">
+                    <div [style.width.px]="100" [style.height.px]="18" [style.backgroundColor]="color.code"></div>
+                  </ng-template>
+                </p-dropdown> -->
+                <ion-fab-button color="danger" size="small" (click)="removeNozzle(item.number)">
+                  <i class="bi bi-x"></i>
+                </ion-fab-button>
+
+              </div>
+            </ion-item>
+          </ng-template>
+        </p-orderList>
+        <ion-button expand="block" size="large">
+          <!-- <ion-icon name="water-sharp"></ion-icon> -->
+          <i class="bi bi-droplet-fill"></i>
+          {{ totalLabel }}
+        </ion-button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>
+
+

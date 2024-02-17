@@ -1,0 +1,24 @@
+:host{
+  height: 100%;
+  display: flex;
+}
+
+#water{
+  position: absolute;
+  top: 0; left: 1px; bottom: 0; right: 0;
+  animation: toRight  infinite linear;
+  animation-fill-mode: forwards;
+  animation-delay: 100ms;
+  // *{
+  //   transform: scale(5) !important;
+  // }
+}
+
+@keyframes toRight {
+  0%, 100%{top: 0px;opacity: 0;}
+  10%{opacity: .7;}
+  15%{opacity: 1;}
+  70%{opacity: 0;}
+  99%{top: 100%; opacity: 0;}
+}
+

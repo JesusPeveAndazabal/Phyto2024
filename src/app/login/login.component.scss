@@ -1,0 +1,81 @@
+
+.input-item{
+  //padding-left: 20px;
+  width: 100%;
+  border-radius: 12px;
+  border: 2px solid #e2e2e2;
+  height: 70px;
+}
+
+.login-button{
+  padding-left: 20px;
+  padding-right: 20px;
+  height: 50px;
+  --border-radius: 12px;
+
+  --box-shadow: none;
+}
+.vertical-center {
+  text-align: center;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  //transform: translateY(-50%);
+  transform: translateY(calc(-50vh + calc(20vh / 3)));
+  max-width: 50vw;
+  width: 100%;
+  margin: auto;
+  max-height: 100vh;
+  margin-top: calc(-20vh / 3);
+}
+
+ion-img{
+  position: relative;
+  width: fit-content;
+  //transform: translateX(50%);
+  z-index: 999999;
+  //max-width: 30vw;
+  //max-height: 30vw;
+  margin: auto;
+  bottom: calc(-25vh /3);
+}
+
+ion-img::part(image) {
+  //border-radius: 50%;
+  //max-width: 30vw;
+  max-height: 25vh;
+  width: auto;
+}
+
+ion-header{
+  --background: transparent;
+}
+ion-card{
+
+  z-index: 1;
+  padding-top: calc(20vh /3);
+  --background: #ffffff8c;
+}
+.ion-item{
+  --background: transparent
+}
+
+ion-input, ion-select{
+  margin: 10px;
+  --padding-start : 10px !important;
+}
+
+.has-focus.sc-ion-input-md-h input.sc-ion-input-md{
+  caret-color : rgb(4, 81, 4) !important;
+}
+
+//border
+.ion-valid.sc-ion-input-md-h {
+  --highlight-color: #0f6405;
+}
+
+:host(.select-fill-outline.select-expanded), :host(.select-fill-outline.ion-focused) {
+  --border-width: 2px;
+  --border-color: #0f6405;
+}

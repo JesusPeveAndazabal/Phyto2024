@@ -1,0 +1,49 @@
+<ion-grid class="h-full">
+  <h5 class="text-center" style="color: aliceblue; margin-top:-1px; margin-bottom:-10px;">TEMPERATURA</h5>
+  <ion-row class="h-full">
+    <ion-col size="3" class="flex">
+      <div class="wrapper">
+        <div id="termometer">
+          <div #temperature id="temperature" style="height:0" data-value="0°C"></div>
+          <div #graduations id="graduations"></div>
+        </div>
+      </div>
+    </ion-col>
+    <ion-col size="8" offset="1" class="flex">
+      <div class="panel-donut">
+        <span id="humidity-slider">
+          <svg preserveAspectRatio="xMinYMin meet" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 525 490" class="svg-thermometer svg-components">
+            <g>
+              <g id="g3361" transform="matrix(4.143017, 0, 0, 4.143017, -11.972127, -736.414551)" style="display: inline;">
+                <g id="g3357">
+                  <path style="opacity:1;fill:#003399;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:markers fill stroke" d="M 367.97461 46.033203 C 357.01532 65.015239 346.52118 84.612519 336.82812 104.13867 C 346.98611 131.47847 353.19727 155.67873 353.19727 172.40039 C 353.19727 209.56965 323.06382 239.70312 285.89453 239.70312 C 285.45494 239.70312 285.02157 239.67831 284.58398 239.66992 C 281.57407 252.96876 279.91797 264.83459 279.91797 274.7168 C 279.91798 323.34989 319.34149 362.77539 367.97461 362.77539 C 416.60774 362.77539 456.0332 323.34989 456.0332 274.7168 C 456.0332 226.0837 415.97182 129.16681 367.97461 46.033203 z " transform="matrix(0.2822222,0,0,0.28222222,0,171)" id="path1439"/>
+                  <path style="fill:none;stroke:#99ccff;stroke-width:3.4000001;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" d="m 86.10652,247.46655 c 1.826331,9.17721 7.179688,16.20748 16.92847,18.83218 l 0,0 0,0" id="path1476"/>
+                </g>
+                <g transform="matrix(0.65007755,0,0,0.65007755,63.600088,44.460436)" id="g1499-6-3">
+                  <path style="opacity:1;fill:#003399;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:markers fill stroke" d="m 51.948862,270.08269 c 0,13.72534 -11.12659,24.85193 -24.851939,24.85193 -13.725343,0 -24.8519318,-11.12659 -24.8519338,-24.85193 2e-6,-13.72534 11.1645728,-40.83223 24.8519338,-64.53943 13.545879,23.46215 24.851939,50.81409 24.851939,64.53943 z" id="path1439-7-5"/>
+                  <path style="fill:none;stroke:#99ccff;stroke-width:3.4000001;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" d="m 9.3526552,269.01813 c 1.8263308,9.17721 7.1796878,16.20748 16.9284738,18.83218 l 0,0 0,0" id="path1476-5-6"/>
+                </g>
+                <path d="M 84.405563,272.65634 A 42.346958,42.346958 0 0 1 29.748322,284.45702 42.346958,42.346958 0 0 1 11.036977,231.76399 42.346958,42.346958 0 0 1 60.89593,206.45086" id="path1545" style="opacity: 1; fill: none; fill-opacity: 1; fill-rule: evenodd; stroke-width: 8.4; stroke-linecap: butt; stroke-linejoin: round; stroke-miterlimit: 4; stroke-dasharray: none; stroke-dashoffset: 0; stroke-opacity: 1; paint-order: markers; stroke: rgb(84, 188, 252);"/>
+              </g>
+              <text style="white-space: pre; fill: rgb(51, 51, 51); font-family: Arial, sans-serif; font-size: 28px;" transform="matrix(3.151307, 0, 0, 3.151328, 105.164116, 319.684753)">{{humidity}}%</text>
+            </g>
+          </svg>
+          <!-- <svg preserveAspectRatio="xMinYMin meet" viewBox="0 0 500 500" class="svg-thermometer half-svg-components" xmlns="http://www.w3.org/2000/svg">
+            <defs></defs>
+            <g id="g3361" transform="matrix(1, 0, 0, 1, 215.450272, -10.146664)" style="display: inline;">
+              <g id="g3357">
+                <path style="opacity:1;fill:#003399;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:markers fill stroke" d="M 367.97461 46.033203 C 357.01532 65.015239 346.52118 84.612519 336.82812 104.13867 C 346.98611 131.47847 353.19727 155.67873 353.19727 172.40039 C 353.19727 209.56965 323.06382 239.70312 285.89453 239.70312 C 285.45494 239.70312 285.02157 239.67831 284.58398 239.66992 C 281.57407 252.96876 279.91797 264.83459 279.91797 274.7168 C 279.91798 323.34989 319.34149 362.77539 367.97461 362.77539 C 416.60774 362.77539 456.0332 323.34989 456.0332 274.7168 C 456.0332 226.0837 415.97182 129.16681 367.97461 46.033203 z " transform="matrix(0.2822222,0,0,0.28222222,0,171)" id="path1439"></path>
+                <path style="fill:none;stroke:#99ccff;stroke-width:3.4000001;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" d="m 86.10652,247.46655 c 1.826331,9.17721 7.179688,16.20748 16.92847,18.83218 l 0,0 0,0" id="path1476"></path>
+              </g>
+              <g transform="matrix(0.65007755,0,0,0.65007755,63.600088,44.460436)" id="g1499-6-3">
+                <path style="opacity:1;fill:#003399;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:markers fill stroke" d="m 51.948862,270.08269 c 0,13.72534 -11.12659,24.85193 -24.851939,24.85193 -13.725343,0 -24.8519318,-11.12659 -24.8519338,-24.85193 2e-6,-13.72534 11.1645728,-40.83223 24.8519338,-64.53943 13.545879,23.46215 24.851939,50.81409 24.851939,64.53943 z" id="path1439-7-5"></path>
+                <path style="fill:none;stroke:#99ccff;stroke-width:3.4000001;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" d="m 9.3526552,269.01813 c 1.8263308,9.17721 7.1796878,16.20748 16.9284738,18.83218 l 0,0 0,0" id="path1476-5-6"></path>
+              </g>
+              <path d="M 84.405563,272.65634 A 42.346958,42.346958 0 0 1 29.748322,284.45702 42.346958,42.346958 0 0 1 11.036977,231.76399 42.346958,42.346958 0 0 1 60.89593,206.45086" id="path1545" style="opacity: 1; fill: none; fill-opacity: 1; fill-rule: evenodd; stroke-width: 8.4; stroke-linecap: butt; stroke-linejoin: round; stroke-miterlimit: 4; stroke-dasharray: none; stroke-dashoffset: 0; stroke-opacity: 1; paint-order: markers; stroke: rgb(84, 188, 252);"></path>
+            </g>
+          </svg> -->
+        </span>
+      </div>
+    </ion-col>
+  </ion-row>
+</ion-grid>

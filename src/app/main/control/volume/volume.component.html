@@ -1,0 +1,70 @@
+<div id="volume-info">
+  <svg version="1.1" id="elp-badge" class="badge"
+		xmlns="http://www.w3.org/2000/svg"
+		xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+		viewBox="0 0 289.1 289.1" enable-background="new 0 0 289.1 289.1"
+		xml:space="preserve">
+		<defs>
+			<filter id="dropshadow">
+				<feGaussianBlur in="SourceAlpha" stdDeviation="0"/>
+				<feOffset dx="-5" dy="5" result="offsetblur"/>
+				<feMerge>
+					<feMergeNode/>
+					<feMergeNode in="SourceGraphic"/>
+				</feMerge>
+			</filter>
+			<style type="text/css">
+				.badge-header, .badge-footer {
+				letter-spacing: 1px;
+				}
+				.badge-percentage {
+				-moz-text-shadow:    -5px 5px 0 #555;
+				-webkit-text-shadow: -5px 5px 0 #555;
+				text-shadow:         -5px 5px 0 #555;
+				}
+
+			</style>
+		</defs>
+		<path id="SVGID_x5F_2_x5F_" fill="none" d="M31.1,129c10.4-62.1,69.2-104,131.4-93.6s104,69.2,93.6,131.4
+				c-10.4,62.1-69.2,104-131.4,93.6C62.5,249.9,20.6,191.1,31.1,129z"/>
+		<text text-anchor="middle">
+			<textPath xlink:href="#SVGID_x5F_2_x5F_" startOffset="165">
+				<tspan class="badge-header" fill="#FFFFFF" font-family="'Open Sans'" font-size="23.1012">{{volume}}L / {{maxCurrentVolume}}L</tspan>
+			</textPath>
+		</text>
+		<path id="SVGID_x5F_1_x5F_" fill="none" d="M263.9,172.8c11-65.5-33.2-127.6-98.7-138.6S37.5,67.4,26.5,133s33.2,127.6,98.7,138.6
+																							 C190.8,282.6,252.9,238.4,263.9,172.8z"/>
+
+		<text text-anchor="middle" dy="55%" dx="50%" stroke="#000" font-size="20pt">{{ currentPh }} PH</text>
+
+		<text text-anchor="middle">
+			<textPath xlink:href="#SVGID_x5F_1_x5F_" startOffset="593">
+				<tspan class="badge-footer" fill="#FFFFFF" font-family="'Open Sans'" font-size="24.4497">{{currentPercentVolume}}%</tspan>
+			</textPath>
+		</text>
+	</svg>
+</div>
+
+<!-- <div class="circle">
+  <div class="wave wave1" [ngStyle]="waveStyle"></div>
+  <div class="wave wave2" [ngStyle]="waveStyle"></div>
+</div> -->
+
+<!-- <div id="water">
+
+</div> -->
+
+<canvas id="animation-frame" class="circle" [ngClass]="{'blink-red': shouldBlink}"></canvas>
+
+<div id="output-controls" class="w-full">
+  <div class="button-group chevrons w-full flex justify-content-center">
+    <button class="button left" (click)="toggleValvulaIzquierda()" [ngClass]="leftControlActive ? 'selected' : ''">
+      <i [ngClass]="leftControlActive ? 'bi bi-unlock' : 'bi bi-lock'"></i>
+		  <!-- <ion-icon  [name]="leftControlActive ? 'lock-open-outline' : 'lock-closed-outline'"></ion-icon> -->
+	  </button>
+    <button class="button" (click)="toggleValvulaDerecha()" [ngClass]="rightControlActive ? 'selected' : ''">
+      <i [ngClass]="rightControlActive ? 'bi bi-unlock' : 'bi bi-lock'" ></i>
+		  <!-- <ion-icon [name]="rightControlActive ? 'lock-open-outline' : 'lock-closed-outline'"></ion-icon> -->
+	  </button>
+  </div>
+</div>

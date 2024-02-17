@@ -1,0 +1,22 @@
+
+<ion-content [fullscreen]="true">
+  <div class="w-6 bg-transparent absolute menu-buttons">
+    <ion-text color="dark" class="text-center">
+      <h1>Menu</h1>
+    </ion-text>
+    <ion-button expand="block" size="large" (click)="openAplicationData()">
+      Acerca de la aplicación (1)
+    </ion-button>
+    <ion-button expand="block" size="large" (click)="openAplicationValues()">
+      Valores de trabajo (2)
+    </ion-button>
+    <ion-button expand="block" size="large" (click)="syncPrimaryTables()">
+      Sincronizar datos primarios
+    </ion-button>
+    <ion-button expand="block" size="large" (click)="generalSettings()">
+      Configuraciones generales
+    </ion-button>
+  </div>
+</ion-content>
+
+<ion-loading #loader [message]="loading_message" spinner="circles"></ion-loading>

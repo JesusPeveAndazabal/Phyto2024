@@ -1,0 +1,45 @@
+<ion-grid class="h-full w-full control-grid" [ngClass]="{'blink-red': emergencia}">
+  <ion-row class="h-full">
+    <ion-col  class="h-full" >
+      <div class="humidity-section section-control" >
+        <div class="component-control">
+          <app-thermometer [wExecution]="wExecution"></app-thermometer>
+        </div>
+      </div>
+      <div class="speedometer-section section-control">
+        <div class="component-control" [ngClass]="{'blink-red': speedError}">
+          <app-speedometer  [latitudGPS]="latitud" [longitudGPS]="longitud" [wExecution]="wExecution" [speed]="speed" [ngClass]="{'blink-red': speedError}">
+
+          </app-speedometer>
+        </div>
+
+      </div>
+    </ion-col>
+    <ion-col size="4">
+      <app-volume
+        [ngClass]="{'blink-red': shouldBlink}"
+        [leftControlActive]="leftControlActive"
+        [rightControlActive]="rightControlActive"
+        [wExecution]="wExecution"
+        [maxCurrentVolume]="maxVolume"
+        [currentVolume]="volume"
+        [currentPh]="currentPh"
+        (onLeftChange)="toggleValvulaIzquierda()"
+        (onRightChange)="toggleValvulaDerecha()"
+      >
+    </app-volume>
+    </ion-col>
+    <ion-col>
+      <div class="flow-section section-control" [ngClass]="{'blink-red': caudalError}">
+        <div class="component-control" [ngClass]="{'blink-red': caudalError}">
+          <app-water-flow [realWaterflow]="waterFlow" [wExecution]="wExecution"></app-water-flow>
+        </div>
+      </div>
+      <div class="pressure-section section-control" [ngClass]="{'blink-red': presionError}">
+        <div class="component-control" [ngClass]="{'blink-red': presionError}">
+          <app-pressure [real_pressure]="pressure" [wExecution]="wExecution"></app-pressure>
+        </div>
+      </div>
+    </ion-col>
+  </ion-row>
+</ion-grid>
