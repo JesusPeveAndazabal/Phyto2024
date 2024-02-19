@@ -60,21 +60,32 @@ export class ControlComponent  implements OnInit {
     this.wExecution = await this.dbService.getLastWorkExecution();
     this.localConfig = await this.dbService.getLocalConfig();
     this.minVolume = this.localConfig.vol_alert_on;
-    this.info = JSON.parse((await this.dbService.getLastWorkExecution()).configuration).pressure;
-    this.speedalert = JSON.parse((await this.dbService.getLastWorkExecution()).configuration).speed;
+    if(this.wExecution){
+      this.info = JSON.parse(this.wExecution.configuration).pressure;
+      this.speedalert = JSON.parse(this.wExecution.configuration).speed;
+  
+      // console.log(this.speedalert, "speedalert");
+      this.caudalNominal = JSON.parse(this.wExecution.configuration).water_flow;
+      // console.log(this.caudalNominal, "caudal nominal");
+    }
 
-    // console.log(this.speedalert, "speedalert");
-    this.caudalNominal = JSON.parse((await this.dbService.getLastWorkExecution()).configuration).water_flow;
-    // console.log(this.caudalNominal, "caudal nominal");
+    this.arduinoService.getSensorObservable(Sensor.WATER_FLOW).subscribe({
+      next:
+      (data:number)  => {
+        this.waterFlow = data;
+      
+      }
+    });
 
     //CAUDAL
     // Combina el observable del intervalo con tu observable de sensor
+    /*
     intervalObservable.pipe(
       startWith(0), // Emite un valor inicial para que comience inmediatamente
       switchMap(() => this.arduinoService.getSensorObservable(Sensor.WATER_FLOW))
     ).subscribe((valorDelSensor:number) => {
       this.waterFlow = valorDelSensor;
-      // console.log(this.waterFlow, "valor del sensor");
+      console.log(valorDelSensor, "valor del sensor flow rxjs");
       this.maxVolume = this.arduinoService.initialVolume;
       config.maxVolume = this.arduinoService.initialVolume;
       if(this.arduinoService.isRunning){
@@ -97,7 +108,7 @@ export class ControlComponent  implements OnInit {
       }
 
     });
-
+    */
 
     // PRESSURE
     intervalObservable.pipe(
