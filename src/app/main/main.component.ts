@@ -244,7 +244,7 @@ export class MainComponent implements OnInit,AfterViewInit{
                 //this.loading_message = "Cargando...";
                 //this.loader.present();
                 return true;
-              }
+              } 
               else return false;
             }
           },

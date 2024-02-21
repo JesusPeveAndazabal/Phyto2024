@@ -60,6 +60,7 @@ export class ControlComponent  implements OnInit {
     this.wExecution = await this.dbService.getLastWorkExecution();
     this.localConfig = await this.dbService.getLocalConfig();
     this.minVolume = this.localConfig.vol_alert_on;
+    
     if(this.wExecution){
       this.info = JSON.parse(this.wExecution.configuration).pressure;
       this.speedalert = JSON.parse(this.wExecution.configuration).speed;
