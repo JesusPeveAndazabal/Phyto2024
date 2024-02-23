@@ -30,6 +30,7 @@ const routes: Routes = [
     canActivate : [authGuard],
     canActivateChild : [authGuard]
   },
+
   {
     path: 'config',
     loadChildren: () => import('./config/config.module').then( m => m.ConfigComponentModule)

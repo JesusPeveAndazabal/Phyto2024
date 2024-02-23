@@ -9,6 +9,7 @@ export interface WorkExecution{
     working_time : moment.Moment;
     downtime : moment.Moment;
     hectare : number;
+    farm_id : number | void; //Variable para el farm opcional
     cultivation : number;
     product : number;
     is_finished : number;
