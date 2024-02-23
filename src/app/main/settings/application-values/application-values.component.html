@@ -74,7 +74,7 @@
 
       <ion-col size="7">
         <div class="flex flex-row align-items-center gap-2">
-          <ion-input [(ngModel)]="quantity" style="min-height: 40px;" placeholder="0" type="number" fill="outline"></ion-input>
+          <ion-input [(ngModel)]="quantity" style="min-height: 40px;min-width:55px;" placeholder="0" type="number" fill="outline"></ion-input>
           <ion-select [(ngModel)]="type" style="min-height: 40px;" placeholder="Seleccionar tipo" fill="outline">
             <ion-select-option *ngFor="let type of nozzleTypes" value="{{type.id}}">{{type.name}}</ion-select-option>
           </ion-select>

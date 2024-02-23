@@ -9,6 +9,8 @@ import { Configuration } from './core/utils/configuration';
 import { firstValueFrom } from 'rxjs';
 import { ApiService } from './core/services/api/api.service';
 import { WorkExecution, WorkExecutionDetail } from './core/models/work-execution';
+import { ArduinoDevice } from './core/services/arduino/arduino.device';
+import { ArduinoService } from './core/services/arduino/arduino.service';
 
 @Component({
   selector: 'app-root',
@@ -23,7 +25,8 @@ export class AppComponent implements OnInit {
   constructor(
     private databaseService : DatabaseService,
     private electronService: ElectronService,
-    private apiService : ApiService) {
+    private apiService : ApiService,
+    private arduinoService : ArduinoService) {
 
       this.databaseService.openConnection();
 
@@ -57,77 +60,13 @@ export class AppComponent implements OnInit {
               break;
           }
         });
+
+        console.log("Configuration",Configuration);
       }
   }
 
   ngOnInit(): void {
     console.log("App initialization", "app.component.ts");
 
-      let records = [];
-      let records1 = [];
-      let sended = [];
-      let onExecution = false; //Variable de control que evita envíos duplicados y sobre carga del tráfico.
-
-      setInterval(()=>{
-        if(!onExecution){
-          onExecution = true;
-
-          //Loop que envía los registros por guardar en el servidor vía API/REST
-          const iteration = async () =>{
-            this.databaseService.getNotSendedExecution().then(async (records)=>{
-              console.log("records execution " , records);
-              records.forEach(async (wExecution : WorkExecution) => {
-                try{
-                  let response = await firstValueFrom(this.apiService.sendRegistroAsyncExecution(wExecution));
-                  console.log("Impresion de el" , wExecution);
-                  if(response.id){
-                    if(response.id > 0 || response.id == -1){
-                      wExecution.id_from_server = response.id;
-                      let workExecutionEnviado = await this.databaseService.updateExecutionSended(wExecution);
-                      
-
-                      let nonSendedExecutionDetail = await this.databaseService.getNotSendedExecutionDetail(wExecution.id)
-                      nonSendedExecutionDetail.forEach(async (wDetail : WorkExecutionDetail) => {
-                        try{
-                          wDetail.data = JSON.parse(wDetail.data);
-                          wDetail.gps = JSON.parse(wDetail.gps);
-                          wDetail.work_execution = wExecution.id_from_server;
-                          let response = await firstValueFrom(this.apiService.sendRegistroAsyncExecutionDetail(wDetail));
-                          if(response.id){
-                            if(response.id > 0 || response.id == -1){
-                              await this.databaseService.updateExecutionSendedDetail(wDetail);
-                            }
-                          }
-        
-                        }catch(exception){
-                          console.log(exception);
-                        }
-                      });
-                    }
-                  }
-                }catch(exception){
-                  console.log(exception);
-                }
-              });
-
-            }).catch((err)=>{
-              console.log(err)
-
-            });
-
-            
-
-            onExecution = false;
-            records = [];
-            records1 = [];
-            sended = [];
-          };
-
-
-          
-        iteration();
-
-        }
-      },9000);
   }
 }

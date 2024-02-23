@@ -8,15 +8,14 @@
       </div>
       <div class="speedometer-section section-control">
         <div class="component-control" [ngClass]="{'blink-red': speedError}">
-          <app-speedometer  [latitudGPS]="latitud" [longitudGPS]="longitud" [wExecution]="wExecution" [speed]="speed" [ngClass]="{'blink-red': speedError}">
-
+          <app-speedometer  [wExecution]="wExecution" [speed]="speed" [ngClass]="{'blink-red': speedError}">
           </app-speedometer>
         </div>
 
       </div>
     </ion-col>
-    <ion-col size="4">
-      <app-volume
+    <ion-col size="4" style="margin-top: -4em;">
+    <app-volume [latitudGPS]="latitud" [longitudGPS]="longitud"
         [ngClass]="{'blink-red': shouldBlink}"
         [leftControlActive]="leftControlActive"
         [rightControlActive]="rightControlActive"
@@ -28,14 +27,15 @@
         (onRightChange)="toggleValvulaDerecha()"
       >
     </app-volume>
+
     </ion-col>
     <ion-col>
-      <div class="flow-section section-control" [ngClass]="{'blink-red': caudalError}">
+      <div class="flow-section section-control" [ngClass]="{'blink-red': caudalError}" >
         <div class="component-control" [ngClass]="{'blink-red': caudalError}">
           <app-water-flow [realWaterflow]="waterFlow" [wExecution]="wExecution"></app-water-flow>
         </div>
       </div>
-      <div class="pressure-section section-control" [ngClass]="{'blink-red': presionError}">
+      <div class="pressure-section section-control" [ngClass]="{'blink-red': presionError}" >
         <div class="component-control" [ngClass]="{'blink-red': presionError}">
           <app-pressure [real_pressure]="pressure" [wExecution]="wExecution"></app-pressure>
         </div>

@@ -12,8 +12,8 @@ declare var iopctrl : any;
 export class SpeedometerComponent  implements OnInit,OnChanges {
   @Input("speed") speed : number = 0;
   @Input("wExecution") wExecution! : WorkExecution;
-  @Input("latitudGPS") latitudGPS : number = 0;
-  @Input("longitudGPS") longitudGPS : number = 0;
+  // @Input("latitudGPS") latitudGPS : number = 0;
+  // @Input("longitudGPS") longitudGPS : number = 0;
   data : any;
   svg : any;
   gauge : any;

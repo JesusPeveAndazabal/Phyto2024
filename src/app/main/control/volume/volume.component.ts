@@ -22,7 +22,8 @@ export class VolumeComponent  implements OnInit,OnChanges {
   @Input("maxCurrentVolume") maxVolume : number = 0;
   @Input("currentVolume") volume : number = 0;
   @Input("currentPh") currentPh : number = 0;
-
+  @Input("latitudGPS") latitudGPS : number = 0;
+  @Input("longitudGPS") longitudGPS : number = 0;
     // Output
   // @Output() leftControlActiveChange: EventEmitter<boolean> = new EventEmitter<boolean>();
   // @Output() rightControlActiveChange: EventEmitter<boolean> = new EventEmitter<boolean>();
@@ -68,7 +69,7 @@ export class VolumeComponent  implements OnInit,OnChanges {
       switchMap(() => this.arduinoService.getSensorObservable(Sensor.VOLUME))
     ).subscribe((valorDelSensor:number) => {
       this.volume = this.arduinoService.currentRealVolume - valorDelSensor;
-      console.log(this.volume, "volumen que me está pasando");
+
 
       if (this.volume < this.minVolume && this.arduinoService.isRunning || this.volume < this.minVolume && !this.arduinoService.isRunning) {
         this.shouldBlink = true;

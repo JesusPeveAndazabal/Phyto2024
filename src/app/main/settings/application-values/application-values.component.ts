@@ -90,9 +90,11 @@ export class ApplicationValuesComponent  implements OnInit {
 
   set items(items: NozzlesConfiguration[]){
     this.nozzleConfig = items;
+    // setTimeout(() => this.updateSummary(null),200);
   }
 
   get unitsPressure(){
+    setTimeout(() => this.updateSummary(null),200);
     return UnitPressure;
   }
   // unitsPressure : any = UnitPressure;
@@ -239,17 +241,34 @@ export class ApplicationValuesComponent  implements OnInit {
     });
   }
 
-  isNullOrNaN(value: number | undefined,nonNullValue : number,item : number) : number {
-    if(isNaN(value!)){
+  // isNullOrNaN(value: number | undefined,nonNullValue : number,item : number) : number {
+  //   if(isNaN(value!)){
+  //     this.invalid_rows++;
+  //     document.getElementById(`row_${item}`)!.setAttribute("style","--background: #ff000057;") ;
+  //   }
+  //   else{
+  //     document.getElementById(`row_${item}`)!.setAttribute("style","--background: transparent;") ;
+  //   }
+
+  //   return !isNaN(value!) ? value! : nonNullValue;
+  // }
+  isNullOrNaN(value: number | undefined, nonNullValue: number, item: number): number {
+    if (isNaN(value!)) {
       this.invalid_rows++;
-      document.getElementById(`row_${item}`)!.setAttribute("style","--background: #ff000057;") ;
-    }
-    else{
-      document.getElementById(`row_${item}`)!.setAttribute("style","--background: transparent;") ;
+      const rowElement = document.getElementById(`row_${item}`);
+      if (rowElement) {
+        rowElement.setAttribute("style", "--background: #ff000057;");
+      }
+    } else {
+      const rowElement = document.getElementById(`row_${item}`);
+      if (rowElement) {
+        rowElement.setAttribute("style", "--background: transparent;");
+      }
     }
 
     return !isNaN(value!) ? value! : nonNullValue;
   }
+
 
   /**
    * The below code is a function that updates the total flow rate of all nozzles based on their configuration and current flow rate.
@@ -272,9 +291,9 @@ export class ApplicationValuesComponent  implements OnInit {
   }
 
   changeUnit($event : any){
-    // console.log($event);
+    // console.log("cambio de item");
     this.pressures_items = [];
-    const info = this.pressure_values.forEach((item : any) =>{
+    this.pressure_values.forEach((item : any) =>{
       let original = UnitPressure.find(p => p.value == item.pressure_unit);
       let convert_unit = UnitPressure.find(p => p.value == $event.value);
       let converted = parseFloat(convertPressureUnit(item.pressure,item.pressure_unit,$event.value).toFixed(2));
