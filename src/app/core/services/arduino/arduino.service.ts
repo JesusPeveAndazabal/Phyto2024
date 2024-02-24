@@ -7,7 +7,7 @@ import { ArduinoDevice } from './arduino.device';
 import { Subject, Observable } from 'rxjs';
 import { Sensor, SocketEvent, WorkStatusChange } from '../../utils/global';
 import { DatabaseService  } from '../database/database.service';
-import { Chronos , TimeTracker} from '../../utils/utils';
+import { Chronos } from '../../utils/utils';
 import { Database, sqlite3 } from 'sqlite3';
 import { Product } from '../../models/product';
 import { Mode } from '../../utils/global';
@@ -26,6 +26,8 @@ import { WorkExecution , WorkExecutionDetail } from '../../models/work-execution
 
 export class ArduinoService {
   listArduinos : ArduinoDevice[] = [];
+  public tiempoProductivo : Chronos = new Chronos(1,"Productivo", false);
+  public tiempoImproductivo : Chronos = new Chronos(2,"Improductivo", false);
   localConfig! : LocalConf;
   minVolume = 0;
   initialVolume: number = 0; // Valor inicial del contenedor
@@ -62,12 +64,7 @@ export class ArduinoService {
 
   timerImproductive: any;
   currentTimeImproductive: number = 0;
-
-  /* Variables de cronometro */
-  tiempoProductivo: number = 0;
-  tiempoImproductivo: number = 0;
-  enTiempoProductivo: boolean = false
-
+  data : any = {};
 
 
   inputPressureValue: number | undefined;
@@ -86,18 +83,18 @@ export class ArduinoService {
     }
 
     //Iteracion para recorre los valores de los sensores y guardarlos localmente
-    let data : any = {};
-    setInterval(()=>{
+    let instance = this;
+    setInterval(async ()=>{
       let onExecution = false;
 
       this.listArduinos.forEach( arduino => {
         arduino.message_from_device.forEach((sensor)=>{
         });
-        data = {...data,...this.mapToObject(arduino.message_from_device)};
+        this.data = {...this.data,...this.mapToObject(arduino.message_from_device)};
         arduino.message_from_device = new Map<Sensor, number|number[]>();
       });
 
-      Object.entries(data).forEach((value) => {
+      Object.entries(this.data).forEach((value) => {
         let sensor = parseInt(value[0]) as Sensor;
         this.notifySensorValue(sensor,sensor == Sensor.GPS?value[1] as number[]:  value[1] as number);
       });
@@ -107,19 +104,36 @@ export class ArduinoService {
         // Loop que envía los registros por guardar en el servidor vía API/REST
         // Enviar siempre cada 100ms pero solo guardar cada 1s
 
-
-
         const iteration = async () =>{ 
           let currentWork : WorkExecution = await this.databaseService.getLastWorkExecution();
 
+          if(currentWork){
+            //Evaluar Tiempo Productivo e improductivo
+            if(this.data[`${Sensor.WATER_FLOW}`] > 1){
+              //Contar productivo
+              instance.tiempoImproductivo.stop();
+              instance.tiempoProductivo.start();
+            }
+            else{
+              //Improductivo
+              instance.tiempoProductivo.stop();
+              instance.tiempoImproductivo.start();
+            }
+
+            currentWork.downtime = instance.tiempoImproductivo.time();
+            currentWork.working_time = instance.tiempoProductivo.time();
+            //Actualizar el tp e i en la db local
+            await this.databaseService.updateTimeExecution(currentWork);
+          }
+
           //Actualizar isRunning cada vez que se acabe el volumen de agua o se inicie el trabajo, o se finalice el trabajo.
           if(currentWork && this.isRunning){           
-            let gps = data[`${Sensor.GPS}`];
+            let gps = this.data[`${Sensor.GPS}`];
             
-            delete data[`${Sensor.GPS}`];
-            delete data[`${Sensor.VALVE_LEFT}`]; //Eliminar valvula izquierda
-            delete data[`${Sensor.VALVE_RIGHT}`]; //Eliminar valvula derecha 
-            delete data[`${Sensor.PRESSURE_REGULATOR}`]; //Eliminar regulador de presion
+            delete this.data[`${Sensor.GPS}`];
+            delete this.data[`${Sensor.VALVE_LEFT}`]; //Eliminar valvula izquierda
+            delete this.data[`${Sensor.VALVE_RIGHT}`]; //Eliminar valvula derecha 
+            delete this.data[`${Sensor.PRESSURE_REGULATOR}`]; //Eliminar regulador de presion
 
             //Evaluar los eventos
             let has_events = false;
@@ -127,10 +141,10 @@ export class ArduinoService {
 
             this.localConfig = await this.databaseService.getLocalConfig();
            
-            if(data[`${Sensor.PRESSURE}`] < this.localConfig.min_pressure || data[`${Sensor.PRESSURE}`] > this.localConfig.max_pressure){
+            if(this.data[`${Sensor.PRESSURE}`] < this.localConfig.min_pressure || this.data[`${Sensor.PRESSURE}`] > this.localConfig.max_pressure){
               has_events = true;
               events = "LA PRESION ESTA FUERA DEL RANGO ESTABLECIDO";
-            }else if(data[`${Sensor.WATER_FLOW}`] < this.localConfig.min_wflow || data[`${Sensor.WATER_FLOW}`] > this.localConfig.max_wflow) {
+            }else if(this.data[`${Sensor.WATER_FLOW}`] < this.localConfig.min_wflow || this.data[`${Sensor.WATER_FLOW}`] > this.localConfig.max_wflow) {
               has_events = true;
               events = "EL CAUDAL ESTA FUERA DEL RANGO ESTABLECIDO";
             }
@@ -139,25 +153,25 @@ export class ArduinoService {
               id_work_execution : currentWork.id, //Jalar el id del work execution
               time              : moment(),
               sended            : false,
-              data              : JSON.stringify(data),
+              data              : JSON.stringify(this.data),
               gps               : JSON.stringify(gps),
               has_events        : has_events, //Evaluar eventos
               events            : events, //Evaluar los eventos
               id                : 0,
             }; 
             //Guardar en la db
-            this.databaseService.saveWorkExecutionDataDetail(wExecutionDetail);
-
-            onExecution = false;
+            await this.databaseService.saveWorkExecutionDataDetail(wExecutionDetail);
           };
+          onExecution = false;
         }
+
         let currentTime = moment();
-        if(currentTime.diff(this.now,'s') >= 1){
-          iteration();
+        if(currentTime.diff(this.now,'seconds') >= 1){
+          await iteration();
           this.now = currentTime;
         }
       }
-    },100); 
+    },200); 
   }
 
   findBySensor(sensor : number): ArduinoDevice{
@@ -273,115 +287,6 @@ export class ArduinoService {
       }
     } */
 
-    /* Codigo para el calculo de tiempo productivo e improductivo */
-
-    iniciarCronometroProductivo(): void {
-      this.enTiempoProductivo = true;
-      let tiempo = 0;
-      const cronometro = setInterval(() => {
-        if (this.enTiempoProductivo) {
-          tiempo++;
-          console.log("PRODUCTIVO", this.formatearTiempo(tiempo));
-          return this.formatearTiempo(tiempo);
-        }
-      }, 1000);
-
-    }
-    
-    iniciarCronometroImproductivo(): void{
-      this.enTiempoProductivo = false;
-      let tiempo = 0;
-      const cronometro = setInterval(() => {
-        if (!this.enTiempoProductivo) {
-          tiempo++;
-          console.log("IMPRODUCTIVO" , this.formatearTiempo(tiempo));
-          return this.formatearTiempo(tiempo);
-        }
-      }, 1000);
-    }
-
-    alternarTiempo() {
-      if (this.enTiempoProductivo) {
-        this.enTiempoProductivo = false;
-        // Guardar el tiempo productivo acumulado antes de iniciar el tiempo improductivo
-        // this.guardarTiempoProductivo(this.tiempoProductivo);
-      } else {
-        this.enTiempoProductivo = true;
-        // Guardar el tiempo improductivo acumulado antes de iniciar el tiempo productivo
-        // this.guardarTiempoImproductivo(this.tiempoImproductivo);
-      }
-    }
-
-    detenerTiempo() {
-      // Detener el tiempo en curso (productivo o improductivo)
-      this.enTiempoProductivo = false;
-      // Opcional: Guardar el tiempo acumulado en la base de datos u otro almacenamiento
-    }
-
-    reiniciarTiempo() {
-      // Reiniciar el tiempo acumulado
-      this.tiempoProductivo = 0;
-      this.tiempoImproductivo = 0;
-      // Opcional: Reiniciar el tiempo en la base de datos u otro almacenamiento
-    }
-
-      //Pausar tiempo productivo
-    pauseTimerProductive(): void {
-      clearInterval(this.timerProductive);
-    }
-
-    //Pausar tiempo Improductivo
-    pauseTimerImproductive(): void {
-      clearInterval(this.timerImproductive);
-    }
-
-    //Reanudar tiempo productivo
-    resumeTimerProductive(): void {
-      this.startTimerProductive();
-    }
-
-    //Reanudar tiempo Improductivo
-    resumeTimerImproductive(): void {
-      this.startTimerImproductive();
-    }
-
-    //Fucnion para tiempo productivo
-    startTimerProductive(): void {
-      // console.log("Ingreso a la funcion de star time productive");
-      this.timerProductive = setInterval(() => {
-        this.currentTimeProductive++;
-      }, 1000);
-    }
-
-    //Funcion para tiempo improductivo
-    startTimerImproductive(): void {
-      this.timerImproductive = setInterval(() => {
-        this.formatearTiempo(this.currentTimeImproductive++);
-      }, 1000);
-    }
-
-    formatearTiempo(tiempo: number): string {
-      const horas = Math.floor(tiempo / 3600);
-      const minutos = Math.floor((tiempo % 3600) / 60);
-      const segundos = tiempo % 60;
-      return (
-        this.agregarCeros(horas) +
-        ':' +
-        this.agregarCeros(minutos) +
-        ':' +
-        this.agregarCeros(segundos)
-      );
-    }
-    // Función para agregar ceros a los números menores que 10
-    agregarCeros(numero: number): string {
-      return numero < 10 ? '0' + numero : '' + numero;
-    }
-
-
-    // Esta función se puede llamar cuando se detiene la aplicación para guardar el tiempo actual
-    saveCurrentTime(): void {
-      // Puedes almacenar this.currentTime en algún lugar, como en el almacenamiento local
-    }
 
   //Este es el encargado de generar y emitir eventos de actualización
   private setupSensorSubjects(): void {
@@ -405,17 +310,12 @@ export class ArduinoService {
     if (this.sensorSubjectMap.has(sensorType)) {
       this.sensorSubjectMap.get(sensorType)!.next(value);
 
-      // if (sensorType === Sensor.VOLUME) {
-      //   if (this.lastVolume !== null && this.lastVolume !== value) {
-      //     if (this.currentRealVolume >= this.minVolume && this.isRunning) {
-      //       this.currentRealVolume -= value;
-      //       console.log("Real Volume", this.currentRealVolume);
-      //     }
-      //   }
-
-      //   // this.lastVolume = value;
-      // }
-
+      if (sensorType === Sensor.VOLUME) {
+        if (this.currentRealVolume > this.minVolume && this.isRunning) {
+          this.currentRealVolume -= value as number;
+          console.log("Real Volume", this.currentRealVolume);
+        }
+      }
     }
   }
 

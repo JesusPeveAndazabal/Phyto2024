@@ -71,22 +71,21 @@ export class ControlComponent  implements OnInit {
     }
 
 
-    this.arduinoService.getSensorObservable(Sensor.WATER_FLOW).subscribe({
-      next:
-      (data:number)  => {
-        this.waterFlow = data;
-      }
-    });
+    // this.arduinoService.getSensorObservable(Sensor.WATER_FLOW).subscribe({
+    //   next:
+    //   (data:number)  => {
+    //     this.waterFlow = data;
+    //   }
+    // });
 
     //CAUDAL
     // Combina el observable del intervalo con tu observable de sensor
-    /*
+    
     intervalObservable.pipe(
       startWith(0), // Emite un valor inicial para que comience inmediatamente
       switchMap(() => this.arduinoService.getSensorObservable(Sensor.WATER_FLOW))
     ).subscribe((valorDelSensor:number) => {
       this.waterFlow = valorDelSensor;
-      console.log(valorDelSensor, "valor del sensor flow rxjs");
       this.maxVolume = this.arduinoService.initialVolume;
       config.maxVolume = this.arduinoService.initialVolume;
       if(this.arduinoService.isRunning){
@@ -109,7 +108,7 @@ export class ControlComponent  implements OnInit {
       }
 
     });
-    */
+    
 
     // PRESSURE
     intervalObservable.pipe(
@@ -140,22 +139,22 @@ export class ControlComponent  implements OnInit {
 
     //VOLUMEN
     // Observable que emite cada segundo
-    intervalObservable.pipe(
-      startWith(0), // Emite un valor inicial para que comience inmediatamente
-      switchMap(() => this.arduinoService.getSensorObservable(Sensor.VOLUME))
-    ).subscribe((valorDelSensor:number) => {
-      this.volume = this.arduinoService.currentRealVolume - valorDelSensor;
-      // console.log(this.volume, "volumen que me está pasando");
+    // intervalObservable.pipe(
+    //   startWith(0), // Emite un valor inicial para que comience inmediatamente
+    //   switchMap(() => this.arduinoService.getSensorObservable(Sensor.VOLUME))
+    // ).subscribe((valorDelSensor:number) => {
+    //   this.volume = this.arduinoService.currentRealVolume;
 
-      if (this.volume < this.minVolume && this.arduinoService.isRunning || this.volume < this.minVolume && !this.arduinoService.isRunning) {
-        this.shouldBlink = true;
-        // alert("Debe rellenar el tanque - Valvulas cerradas");
-        this.arduinoService.deactivateRightValve();
-        this.arduinoService.deactivateLeftValve();
-      } else {
-        this.shouldBlink = false;
-      }
-    });
+    //   if (this.volume < this.minVolume && this.arduinoService.isRunning) {
+    //     console.log("Debe rellenar el tanque - Valvulas cerradas" , this.volume , this.minVolume);
+    //     this.shouldBlink = true;
+    //     // this.toggleValvulaDerecha();
+    //     // this.toggleValvulaIzquierda();
+    //     //this.arduinoService.isRunning = false;
+    //   } else {
+    //     this.shouldBlink = false;
+    //   }
+    // });
 
     // PH
     this.arduinoService.getSensorObservable(Sensor.PH).subscribe((valorDelSensor:number) => {

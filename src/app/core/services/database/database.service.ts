@@ -785,12 +785,12 @@ export class DatabaseService extends ElectronService {
         "UPDATE work_execution SET working_time = ? , downtime = ? WHERE id = ?;";
 
       // Ejecutar la actualización en la tabla 'work_execution'
-      db.run(sql, [o.working_time , o.downtime , o.id], (err: Error | null) => {
+      db.run(sql, [o.working_time.format('H:mm:ss') , o.downtime.format('H:mm:ss') , o.id], (err: Error | null) => {
         if (err) {
           console.error("SQLITE UPDATE error", err);
           reject(err);
         } else {
-          console.log("Actualización exitosa");
+          // console.log("Actualización exitosa");
           resolve(true);
         }
 

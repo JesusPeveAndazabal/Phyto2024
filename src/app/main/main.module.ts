@@ -12,11 +12,10 @@ import { FormsModule,ReactiveFormsModule } from '@angular/forms';
 import {ChipsModule} from 'primeng/chips';
 import { MainRoutingModule } from './main-routing.module';
 import { MainComponent } from './main.component';
-import { ArduinoService } from '../core/services/arduino/arduino.service';
 
 @NgModule({
   declarations: [MainComponent],
-  providers: [ ArduinoService],
+  providers:[],
   imports: [
     IonicModule,
     FormsModule,

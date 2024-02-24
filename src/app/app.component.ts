@@ -25,8 +25,7 @@ export class AppComponent implements OnInit {
   constructor(
     private databaseService : DatabaseService,
     private electronService: ElectronService,
-    private apiService : ApiService,
-    private arduinoService : ArduinoService) {
+    private apiService : ApiService) {
 
       this.databaseService.openConnection();
 

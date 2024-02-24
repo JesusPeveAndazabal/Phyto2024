@@ -1,84 +1,76 @@
+import * as moment from 'moment';
+
 export class Chronos {
-  private _startTime: number | null;
-  private accumulator: number;
+    private _name: string | null;
+    private _start: boolean;
+    private _startTime: moment.Moment | null;
+    private accumulator: moment.Duration;
+    private work: number;
 
-  constructor() {
-    this._startTime = null;
-    this.accumulator = 0;
-  }
-
-  start(): void {
-    this._startTime = performance.now();
-  }
-
-  stop(): void {
-    if (this._startTime !== null) {
-      this.accumulator += performance.now() - this._startTime;
-      this._startTime = null;
+    constructor(work: number, name: string | null = null, start: boolean = true) {
+        this._name = name;
+        this._start = start; // Boolean start clock on instantiation
+        this.work = work;
+        this.reset();
+        if (this._start) {
+            this.start();
+        }
     }
-  }
 
-  reset(): void {
-    this.accumulator = 0;
-    this._startTime = performance.now();
-  }
-
-  getTime(): number {
-    if (this._startTime !== null) {
-      return this.accumulator + (performance.now() - this._startTime);
+    start(): void {
+      if(!this._startTime){
+        this._startTime = moment.utc();
+      }
     }
-    return this.accumulator;
-  }
 
-  time(): string {
-    const elapsedMilliseconds = this.getTime();
-    const hours = Math.floor(elapsedMilliseconds / 3600000);
-    const minutes = Math.floor((elapsedMilliseconds % 3600000) / 60000);
-    const seconds = Math.floor((elapsedMilliseconds % 60000) / 1000);
-    const milliseconds = Math.round(elapsedMilliseconds % 1000);
+    stop(): void {
+        this._startTime = null;
+    }
 
-    return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}.${String(milliseconds).padStart(3, '0')}`;
-  }
-}
+    update(): void {
+        if (this._startTime) {
+            this.accumulator.add(moment.utc().diff(this._startTime,'milliseconds'),'milliseconds');
+            this._startTime = null;
+            this.start();
+        }
+    }
 
+    reset(): void {
+        this.accumulator = moment.duration(0,'milliseconds');
+        this._startTime = null;
+    }
 
-export class TimeTracker {
-  private productiveChronos: Chronos;
-  private unproductiveChronos: Chronos;
+    set_initial(initial: string): void {
+        try {
+            const parsed = initial.split(':');
+            const seconds = parsed[2].split('.');
+            let milliseconds = 0;
+            if (seconds.length > 1) {
+                milliseconds = parseInt(seconds[1]);
+            }
+            this.accumulator = moment.duration({
+                hours: parseInt(parsed[0]),
+                minutes: parseInt(parsed[1]),
+                seconds: parseInt(seconds[0]),
+                milliseconds: milliseconds
+            });
+        } catch (ex) {
+            console.log("timer...", ex);
+        }
+    }
 
-  constructor() {
-    this.productiveChronos = new Chronos();
-    this.unproductiveChronos = new Chronos();
-  }
+    elapsed(): moment.Duration {
+        if (this._startTime) {
+            this.update();
+        }
+        return this.accumulator;
+    }
 
-  startProductiveTime(): void {
-    this.productiveChronos.start();
-    this.unproductiveChronos.stop();
-  }
-
-  stopProductiveTime(): void {
-    this.productiveChronos.stop();
-  }
-
-  startUnproductiveTime(): void {
-    this.unproductiveChronos.start();
-    this.productiveChronos.stop();
-  }
-
-  stopUnproductiveTime(): void {
-    this.unproductiveChronos.stop();
-  }
-
-  getProductiveTime(): string {
-    return this.productiveChronos.time();
-  }
-
-  getUnproductiveTime(): string {
-    return this.unproductiveChronos.time();
-  }
-
-  reset(): void {
-    this.productiveChronos.reset();
-    this.unproductiveChronos.reset();
-  }
+    /**
+     * 
+     * @returns Retorna el tiempo acumulado en formato `H:mm:ss`
+     */
+    time(): moment.Moment {
+      return moment.utc(this.elapsed().asMilliseconds());
+    }
 }

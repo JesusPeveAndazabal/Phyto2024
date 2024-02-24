@@ -84,10 +84,9 @@ export class MainComponent implements OnInit,AfterViewInit{
 
 
     this.arduinoService.getSensorObservable(Sensor.VOLUME).subscribe((valorDelSensor) => {
-      if (this.arduinoService.currentRealVolume < this.localConfig.vol_alert_on){
+      if (this.arduinoService.currentRealVolume < this.localConfig.vol_alert_on && this.arduinoService.isRunning){
         this.workStatus = WorkStatusChange.STOP;
         this.classButtonPower = "power-button-off";
-        this.arduinoService.isRunning = false;
       }
     });
   }
@@ -235,7 +234,6 @@ export class MainComponent implements OnInit,AfterViewInit{
                 this.arduinoService.inicializarContenedor(val,this.localConfig.vol_alert_on);
                 this.workStatus = WorkStatusChange.START;
                 this.classButtonPower = this.workStatus == WorkStatusChange.START ? "power-button-on" : "power-button-off";
-                this.arduinoService.iniciarCronometroProductivo();
 
                 //this.arduinoService.isRunning = true;
                 //Mostrar el loader con el mensaje cargando hasta que termine de regular
@@ -298,7 +296,6 @@ export class MainComponent implements OnInit,AfterViewInit{
               config.lastWorkExecution = false;
               this.arduinoService.isRunning = false;
               this.finished;
-              this.arduinoService.iniciarCronometroImproductivo();
               // console.log(finalizar, "finalizar");
             }
           },

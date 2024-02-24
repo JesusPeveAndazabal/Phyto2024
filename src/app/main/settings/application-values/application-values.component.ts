@@ -128,7 +128,7 @@ export class ApplicationValuesComponent  implements OnInit {
 
         return false;
       }
-
+      this.nozzleConfig = this.nozzleConfig.map(p => {return { type : p.type, number : p.number, color : parseInt(p.color.toString()) }});
       this.weConfiguration = {
         nozzles : this.nozzleConfig,
         water_flow : this.total,

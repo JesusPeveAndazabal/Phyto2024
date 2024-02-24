@@ -68,19 +68,21 @@ export class VolumeComponent  implements OnInit,OnChanges {
       startWith(0), // Emite un valor inicial para que comience inmediatamente
       switchMap(() => this.arduinoService.getSensorObservable(Sensor.VOLUME))
     ).subscribe((valorDelSensor:number) => {
-      this.volume = this.arduinoService.currentRealVolume - valorDelSensor;
+      this.volume = parseFloat(this.arduinoService.currentRealVolume.toFixed(2));
 
 
-      if (this.volume < this.minVolume && this.arduinoService.isRunning || this.volume < this.minVolume && !this.arduinoService.isRunning) {
+      if (this.arduinoService.currentRealVolume < this.minVolume && this.arduinoService.isRunning) {
         this.shouldBlink = true;
-        // alert("Debe rellenar el tanque - Valvulas cerradas");
-        this.arduinoService.deactivateRightValve();
-        this.arduinoService.deactivateLeftValve();
+        this.toggleValvulaDerecha();
+        this.toggleValvulaIzquierda()
+        // this.arduinoService.deactivateRightValve();
+        // this.arduinoService.deactivateLeftValve();
         this.arduinoService.isRunning = false;
       } else {
         this.shouldBlink = false;
       }
     });
+    
     this.container = new Wave({
       unit: 10, // wave size
       info: {

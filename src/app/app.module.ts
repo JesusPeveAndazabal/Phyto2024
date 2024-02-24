@@ -18,6 +18,7 @@ import {ConfigComponentModule } from '../app/config/config.module';
 import { AtomizerAuthInterceptor } from './core/security/atomizer-auth.interceptor';
 import { DropdownModule } from 'primeng/dropdown';
 import { Routes, RouterModule } from '@angular/router';
+import { ArduinoService } from './core/services/arduino/arduino.service';
 // import { ElectronService } from './core/services';
 // AoT requires an exported function for factories
 const httpLoaderFactory = (http: HttpClient): TranslateHttpLoader =>  new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -48,6 +49,7 @@ const httpLoaderFactory = (http: HttpClient): TranslateHttpLoader =>  new Transl
       useClass: AtomizerAuthInterceptor,
       multi: true,
     },
+    ArduinoService
   ]
 })
 
