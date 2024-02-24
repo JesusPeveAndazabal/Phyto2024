@@ -3,7 +3,6 @@ import { SerialPort} from 'serialport';
 import { ReadlineParser } from '@serialport/parser-readline'
 import { ElectronService } from '../electron/electron.service';
 import { Sensor } from '../../utils/global';
-import { ArduinoService } from './arduino.service';
 
 //Importacion del observable para el uso de las funciones reactivas para obtener los datos de los sensores
 import { Observable, Subject } from 'rxjs';
@@ -39,7 +38,7 @@ export class ArduinoDevice {
   constructor(
     public path: string,public baudrate: number,public autoOpen: boolean,
     private electronService: ElectronService,
-    private arduinoService: ArduinoService,
+    // private arduinoService: ArduinoService,
   ) {
       this.connectToDevice(path, baudrate,autoOpen);
       /* this.setupSensorSubjects(); */
@@ -131,9 +130,9 @@ export class ArduinoDevice {
         }
         this.message_from_device.set(sensorType, numericValue);
 
-        this.arduinoService.notifySensorValue(sensorType, numericValue);
+        //this.arduinoService.notifySensorValue(sensorType, numericValue);
       });
-      console.log('Received message from Arduino:', this.message_from_device);
+      //console.log('Received message from Arduino:',this.mapToObject(this.message_from_device)) ;
     });
   }
 
@@ -143,7 +142,7 @@ export class ArduinoDevice {
         if (error) {
           console.error('Error writing to Arduino:', error);
         } else {
-          console.log('Command sent to Arduino:', command);
+          //console.log('Command sent to Arduino:', command);
         }
       });
     }
@@ -160,5 +159,11 @@ export class ArduinoDevice {
       });
     }
   }
-
+  public  mapToObject(map: Map<any, any>): { [key: string]: any } {
+    const obj: { [key: string]: any } = {};
+    map.forEach((value, key) => {
+      obj[key.toString()] = value;
+    });
+    return obj;
+  }
 }

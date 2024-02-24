@@ -58,7 +58,7 @@ export class VolumeComponent  implements OnInit,OnChanges {
     //this.setVolume(40);
     // this.animateWaves();
     // this.shouldBlink= true;
-    this.localConfig = await this.dbService.getLocalConfig();
+    this.localConfig = await this.dbService.getLocalConfig();    
     this.minVolume = this.localConfig.vol_alert_on;
     const intervalObservable = interval(1000); // Puedes ajustar el intervalo según sea necesario
 
@@ -68,7 +68,7 @@ export class VolumeComponent  implements OnInit,OnChanges {
       switchMap(() => this.arduinoService.getSensorObservable(Sensor.VOLUME))
     ).subscribe((valorDelSensor:number) => {
       this.volume = this.arduinoService.currentRealVolume - valorDelSensor;
-      console.log(this.volume, "volumen que me está pasando");
+
 
       if (this.volume < this.minVolume && this.arduinoService.isRunning || this.volume < this.minVolume && !this.arduinoService.isRunning) {
         this.shouldBlink = true;

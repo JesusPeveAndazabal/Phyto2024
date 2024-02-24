@@ -21,7 +21,7 @@ export class GpsComponent  implements OnInit,AfterViewInit,OnChanges {
   private wasCentered: boolean = false;
   constructor(private location: Location, public alerta:SettingsComponent) {
     this.loader = new Loader({
-      apiKey: 'AIzaSyAtXm4THV1jvrC8JAiqkjrhcSd4eh53WgY',
+      apiKey: 'AIzaSyB1e3MksyyGNyEfpLsAAW_a_dWddLWY2V0',
       version: 'weekly', // La versión de la API de Google Maps que deseas utilizar
     });
   }
@@ -55,14 +55,14 @@ export class GpsComponent  implements OnInit,AfterViewInit,OnChanges {
     // console.log("entra a load m☺arker:", config.gps);
     if(config.gps.length > 1){
       if(!this.wasCentered && this.map){
-        this.map.setCenter({ lat: config.gps[0][1], lng: config.gps[0][0] });
+        this.map.setCenter({ lat: config.gps[0][0], lng: config.gps[0][1] });
         this.wasCentered = true;
       }
 
       let pathLines = [];
 
       for(let i = 0; i< config.gps.length; i++){
-        pathLines.push({ lat: config.gps[i][1], lng: config.gps[i][0] });
+        pathLines.push({ lat: config.gps[i][0], lng: config.gps[i][1] });
       }
 
       let line = new google.maps.Polyline({
@@ -70,7 +70,7 @@ export class GpsComponent  implements OnInit,AfterViewInit,OnChanges {
         geodesic: true,
         strokeColor: '#4986E7',
         strokeOpacity: 1.0,
-        strokeWeight: 3
+        strokeWeight: 3 
       });
 
       line.setMap(this.map);

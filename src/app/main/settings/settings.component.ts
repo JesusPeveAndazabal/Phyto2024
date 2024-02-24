@@ -30,9 +30,11 @@ export class SettingsComponent  implements OnInit {
 
   async ngOnInit() {
     this.dbService.getLocalConfig();
-    this.dbService.getLastWorkExecution();
-    this.info = +JSON.parse((await this.dbService.getLastWorkExecution()).configuration).pressure;
-    console.log(this.info, "INFOOOOOO");
+    let wExecution = await this.dbService.getLastWorkExecution();
+    if(wExecution){
+      this.info = +JSON.parse(wExecution.configuration).pressure;
+      console.log(this.info, "INFOOOOOO");
+    }
   }
 
   public mostrarAlertaChica(html){
@@ -166,6 +168,7 @@ export class SettingsComponent  implements OnInit {
       this.router.navigate(['/main']);
       console.log(this.info, "valor del info");
       let data = +this.info;
+      console.log("Impresion de el valor de presion" , data);
       this.arduinoService.regulatePressureWithBars(data);
       return true;
     }catch(err : any){

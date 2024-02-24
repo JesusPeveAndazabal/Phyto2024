@@ -68,16 +68,16 @@ export class ApiService {
         Authorization:  `Bearer ${Configuration.token}`
       })
     };
-    return this.http.post<WorkExecution>(`https://ps-test.fitosatbeta.com/api/work-execution-app/` , wExecution, httpOptions);
+    return this.http.post<WorkExecution>(`${Configuration.urlRest}/api/work-execution-app/` , wExecution, httpOptions);
   }
 
-  public sendRegistroAsyncExecutionDetail(wExecutionDetail: WorkExecutionDetail): Observable<WorkExecutionDetail> {
+  public sendRegistroAsyncExecutionDetail(wExecutionDetail: WorkExecutionDetail[]): Observable<WorkExecutionDetail> {
     let httpOptions = {
       headers: new HttpHeaders({
         'Content-Type':  'application/json',
         Authorization:  `Bearer ${Configuration.token}`
       })
     };
-    return this.http.post<WorkExecutionDetail>(`https://ps-test.fitosatbeta.com/api/work-execution-data-app/` , wExecutionDetail, httpOptions);
+    return this.http.post<WorkExecutionDetail>(`${Configuration.urlRest}/api/work-execution-data-app/` , wExecutionDetail, httpOptions);
   }
 }

@@ -3,6 +3,7 @@ import { environment } from './../../../../environments/environment';
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { Configuration } from '../../utils/configuration';
 // import {  } from 'src/app/core/models/models';
 
 @Injectable({
@@ -15,39 +16,39 @@ export class GeneralService {
   }
 
   public getPeople(token : string): Observable<Array<Person>> {
-    return this.http.get<Array<Person>>(`${environment.apiURL}/api/person-app/`);
+    return this.http.get<Array<Person>>(`${Configuration.urlRest}/api/person-app/`);
   }
 
   public getCultivations(): Observable<Array<Cultivation>> {
-    return this.http.get<Array<Cultivation>>(`${environment.apiURL}/api/cultivation-app/`);
+    return this.http.get<Array<Cultivation>>(`${Configuration.urlRest}/api/cultivation-app/`);
   }
 
   public getFarm(): Observable<Array<Farm>> {
-    return this.http.get<Array<Farm>>(`${environment.apiURL}/api/farm-app/`);
+    return this.http.get<Array<Farm>>(`${Configuration.urlRest}/api/farm-app/`);
   }
 
   public getLots(): Observable<Array<Lot>> {
-    return this.http.get<Array<Lot>>(`${environment.apiURL}/api/lot-app/`);
+    return this.http.get<Array<Lot>>(`${Configuration.urlRest}/api/lot-app/`);
   }
 
   public getNozzleColors(): Observable<Array<NozzleColor>> {
-    return this.http.get<Array<NozzleColor>>(`${environment.apiURL}/api/nozzle-color-app/`);
+    return this.http.get<Array<NozzleColor>>(`${Configuration.urlRest}/api/nozzle-color-app/`);
   }
 
   public getNozzleTypes(): Observable<Array<NozzleType>> {
-    return this.http.get<Array<NozzleType>>(`${environment.apiURL}/api/nozzle-type-app/`);
+    return this.http.get<Array<NozzleType>>(`${Configuration.urlRest}/api/nozzle-type-app/`);
   }
 
   public getNozzles(): Observable<Array<Nozzles>> {
-    return this.http.get<Array<Nozzles>>(`${environment.apiURL}/api/nozzles-app/`);
+    return this.http.get<Array<Nozzles>>(`${Configuration.urlRest}/api/nozzles-app/`);
   }
 
   public getProducts(): Observable<Array<Product>> {
-    return this.http.get<Array<Product>>(`${environment.apiURL}/api/product-app/`);
+    return this.http.get<Array<Product>>(`${Configuration.urlRest}/api/product-app/`);
   }
 
   public getWorks(): Observable<Array<Work>> {
-    return this.http.get<Array<Work>>(`${environment.apiURL}/api/work-app/`);
+    return this.http.get<Array<Work>>(`${Configuration.urlRest}/api/work-app/`);
   }
 
   /**

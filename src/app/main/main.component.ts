@@ -31,6 +31,12 @@ export class MainComponent implements OnInit,AfterViewInit{
   supervisorData : Person  | null = null;
   localConfig : LocalConf;
 
+  /* Variables para el calculo del tiempo */
+  cronometroProductivo: number = 0;
+  cronometroImproductivo: number = 0;
+  enModoProductivo: boolean = false;
+  velocidadCronometro: number = 1;
+
   workStatus : WorkStatusChange = WorkStatusChange.STOP;
   classButtonPower = "power-button-off";
   islocalServerConnected : boolean = false; //Status of websocket connection (local server)
@@ -39,7 +45,7 @@ export class MainComponent implements OnInit,AfterViewInit{
     {
       label: "Nuevo volumen",
       type: 'number' as any,
-      placeholder: '1000',
+      placeholder: '1000',  
       id:'txt_vol',
       name : 'txt_vol',
       min: 1,
@@ -55,29 +61,30 @@ export class MainComponent implements OnInit,AfterViewInit{
     private route : ActivatedRoute,
     public alerta: SettingsComponent,
     public arduinoService : ArduinoService
+    
     ) {
       // console.log(this.login, "main.component... constructor");
 
      }
-
 
   async ngOnInit() {
     await this.databaseService.openConnection();
 
     this.login = await this.databaseService.getLogin();
     this.lastWorkExecution = await this.databaseService.getLastWorkExecution();
-    this.finished =  (await this.databaseService.getLastWorkExecution()).id;
+    if(this.lastWorkExecution) {
+      this.finished = this.lastWorkExecution.id;
+      //Obtener las coordenadas del trabajo lastWorkExecution JSON.parse()
+      let details = await this.databaseService.getWorkExecutionDetailReal(this.lastWorkExecution.id);
+      details.forEach((wDetail : WorkExecutionDetail) => {
+        config.gps.push(JSON.parse(wDetail.gps));
+      });
+    }
     config.lastWorkExecution = this.lastWorkExecution;
     this.localConfig = await this.databaseService.getLocalConfig();
 
-    //Obtener las coordenadas del trabajo lastWorkExecution JSON.parse()
-    let details = await this.databaseService.getWorkExecutionDetailReal(this.lastWorkExecution.id);
-    details.forEach((wDetail : WorkExecutionDetail) => {
-      config.gps.push(JSON.parse(wDetail.gps));
-    });
 
     this.arduinoService.getSensorObservable(Sensor.VOLUME).subscribe((valorDelSensor) => {
-      console.log(this.localConfig);
       if (this.arduinoService.currentRealVolume < this.localConfig.vol_alert_on){
         this.workStatus = WorkStatusChange.STOP;
         this.classButtonPower = "power-button-off";
@@ -180,6 +187,7 @@ export class MainComponent implements OnInit,AfterViewInit{
       data : {id : this.lastWorkExecution!.id}
     };
     command.data.id = (await this.databaseService.getLastWorkExecution()).id;
+    
     console.log(command, "array de socket data");
     console.log(command.data.id, "id");
 
@@ -207,7 +215,8 @@ export class MainComponent implements OnInit,AfterViewInit{
               console.log(val, "val confirmar");
               if (val){
                 this.localConfig = await this.databaseService.getLocalConfig();
-                this.lastWorkExecution;
+                this.lastWorkExecution = await this.databaseService.getLastWorkExecution();
+                
                 await this.openIfNotConnected();
                 let volume : WaterVolumes = { id :0 ,volume: val,work_exec_id : this.lastWorkExecution!.id };
                 // console.log(volume, "volume");
@@ -229,6 +238,9 @@ export class MainComponent implements OnInit,AfterViewInit{
                 this.arduinoService.inicializarContenedor(val,this.localConfig.vol_alert_on);
                 this.workStatus = WorkStatusChange.START;
                 this.classButtonPower = this.workStatus == WorkStatusChange.START ? "power-button-on" : "power-button-off";
+   
+                
+
                 //this.arduinoService.isRunning = true;
                 //Mostrar el loader con el mensaje cargando hasta que termine de regular
                 //this.loading_message = "Cargando...";
@@ -259,7 +271,7 @@ export class MainComponent implements OnInit,AfterViewInit{
 
     let diff = endTime.diff(this.listenTime,"milliseconds");
     if(diff < 10) return;
-
+    this.lastWorkExecution = await this.databaseService.getLastWorkExecution();
     let command : SocketData = {
       event:SocketEvent.WORK_STATUS_CHANGES,
       type: WorkStatusChange.STOP,
@@ -290,6 +302,7 @@ export class MainComponent implements OnInit,AfterViewInit{
               config.lastWorkExecution = false;
               this.arduinoService.isRunning = false;
               this.finished;
+              this.arduinoService.iniciarCronometroImproductivo();
               // console.log(finalizar, "finalizar");
             }
           },

@@ -643,7 +643,9 @@ export class DatabaseService extends ElectronService {
   async getNotSendedExecution() : Promise<WorkExecution[]>{
     return new Promise<WorkExecution[]>((resolve,reject)=>{
       let db = new this.sqlite.Database(this.file);
-      let sql = "SELECT * FROM work_execution WHERE sended = ?";
+      
+      let sql = `SELECT * FROM work_execution as we WHERE sended = ? 
+                or id in (SELECT distinct id_work_execution FROM work_execution_details as wed WHERE wed.sended = 0)`;
       db.all(sql,[0],(err,rows : WorkExecution[])=>{
         if(err){
           process.nextTick(() => reject(err));
@@ -743,22 +745,6 @@ export class DatabaseService extends ElectronService {
    * @param data Array of WorkExecution class
    * @returns void
    */
-  // async updateWorkExecutionData(o : WorkExecution): Promise<boolean> {
-  //   return new Promise((resolve, reject) => {
-  //     // o.supervisor = !o.supervisor ? null!: o.supervisor;
-  //     let db = new this.sqlite.Database(this.file);
-  //     let sql = "UPDATE work_execution SET work = ?, supervisor = ?, lot = ?,worker = ?,configuration = ?, hectare = ?,cultivation = ?, product = ? WHERE id = ?;";
-  //     db = db.run(sql,[o.work,o.supervisor, o.lot,o.worker,o.configuration,o.hectare,o.cultivation,o.product,o.id],
-  //       (err : Error)=>{
-  //         if(err){
-  //           console.log("SQLITE INSERT error", err);
-  //           process.nextTick(() => reject(err));
-  //         }
-  //         process.nextTick(() => resolve(true));
-  //       });
-  //       db.close();
-  //   });
-  // }
 
   async updateWorkExecutionData(o: WorkExecution): Promise<boolean> {
     return new Promise<boolean>((resolve, reject) => {
@@ -785,6 +771,39 @@ export class DatabaseService extends ElectronService {
       });
     });
   }
+ /**
+   * Save WorkExecution's data from server to local db for offline case uses
+   * @param data Array of WorkExecution class
+   * @returns void
+   */
+
+  async updateTimeExecution(o: WorkExecution): Promise<boolean> {
+    return new Promise<boolean>((resolve, reject) => {
+      let db = new this.sqlite.Database(this.file);
+      let sql =
+        "UPDATE work_execution SET working_time = ? , downtime = ? WHERE id = ?;";
+
+      // Ejecutar la actualización en la tabla 'work_execution'
+      db.run(sql, [o.working_time , o.downtime , o.id], (err: Error | null) => {
+        if (err) {
+          console.error("SQLITE UPDATE error", err);
+          reject(err);
+        } else {
+          console.log("Actualización exitosa");
+          resolve(true);
+        }
+
+        // Cerrar la base de datos después de la operación
+        db.close((closeErr: Error | null) => {
+          if (closeErr) {
+            console.error("Error al cerrar la base de datos", closeErr);
+          }
+        });
+      });
+    });
+  }
+
+
   
        /**
    * Save WorkExecution's data from server to local db for offline case uses
