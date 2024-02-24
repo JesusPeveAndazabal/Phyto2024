@@ -69,7 +69,7 @@ export class AppComponent implements OnInit {
     console.log("App initialization", "app.component.ts");
 
 
-/*       let records = [];
+      let records = [];
       let records1 = [];
       let sended = [];
       let onExecution = false; //Variable de control que evita envíos duplicados y sobre carga del tráfico.
@@ -93,6 +93,8 @@ export class AppComponent implements OnInit {
                   }
                   else{
                     //Actualizar
+                    // Lógica para actualizar los registros en el servidor si es necesario
+                    let response = await this.databaseService.updateWorkExecutionData(wExecution);
                   }
                   
                   if(response.id){
@@ -117,7 +119,7 @@ export class AppComponent implements OnInit {
                           });
 
                           let response = await firstValueFrom(this.apiService.sendRegistroAsyncExecutionDetail(paquete));
-                          
+                                       
                           //Se asume que está guardando correctamente
                           paquete.forEach(async (wDetail : WorkExecutionDetail) => {
                             await this.databaseService.updateExecutionSendedDetail(wDetail);
@@ -155,6 +157,6 @@ export class AppComponent implements OnInit {
         iteration();
 
         }
-      },9000); */
+      },9000); 
   }
 }
