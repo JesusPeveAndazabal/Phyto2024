@@ -85,6 +85,7 @@ export class AppComponent implements OnInit {
                 try{
                   let response : WorkExecution = wExecution;
                   if(!wExecution.id_from_server){
+                    wExecution.configuration = JSON.parse(wExecution.configuration);
                     response = await firstValueFrom(this.apiService.sendRegistroAsyncExecution(wExecution));
                     if(response.id){
                       wExecution.id_from_server = response.id;
@@ -143,8 +144,6 @@ export class AppComponent implements OnInit {
               console.log(err)
 
             });
-
-            
 
             onExecution = false;
             records = [];
