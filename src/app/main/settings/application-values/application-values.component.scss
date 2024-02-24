@@ -8,4 +8,13 @@ ion-content::part(scroll) {
 
 }
 
+.input-fill-outline.sc-ion-input-md-h{
+  --padding-end: 12px !important;
+  --padding-start: 12px !important;
 
+}
+
+
+// @media only screen and (min-width: 768px) and (min-height: 768px):host{
+//   width: 900 !important;
+// }

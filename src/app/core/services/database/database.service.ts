@@ -643,7 +643,7 @@ export class DatabaseService extends ElectronService {
   async getNotSendedExecution() : Promise<WorkExecution[]>{
     return new Promise<WorkExecution[]>((resolve,reject)=>{
       let db = new this.sqlite.Database(this.file);
-      
+
       let sql = `SELECT * FROM work_execution as we WHERE sended = ? 
                 or id in (SELECT distinct id_work_execution FROM work_execution_details as wed WHERE wed.sended = 0)`;
       db.all(sql,[0],(err,rows : WorkExecution[])=>{
@@ -672,7 +672,7 @@ export class DatabaseService extends ElectronService {
         db.close();
     });
   }
-  
+
   /**
    * Save WorkExecution's data from server to local db for offline case uses
    * @param data Array of WorkExecution class
@@ -771,6 +771,7 @@ export class DatabaseService extends ElectronService {
       });
     });
   }
+
  /**
    * Save WorkExecution's data from server to local db for offline case uses
    * @param data Array of WorkExecution class
@@ -803,9 +804,7 @@ export class DatabaseService extends ElectronService {
     });
   }
 
-
-  
-       /**
+ /**
    * Save WorkExecution's data from server to local db for offline case uses
    * @param data Array of WorkExecution class
    * @returns void
@@ -815,7 +814,7 @@ export class DatabaseService extends ElectronService {
         return new Promise<boolean>((resolve,reject)=>{
           let db = new this.sqlite.Database(this.file);
           let sql = "UPDATE work_execution_details SET sended = ? WHERE id = ?";
-    
+
           db = db.run(sql,[1,wExecutionDetail.id],
             (err : Error)=>{
               if(err){

@@ -60,21 +60,21 @@ export class ControlComponent  implements OnInit {
     this.wExecution = await this.dbService.getLastWorkExecution();
     this.localConfig = await this.dbService.getLocalConfig();
     this.minVolume = this.localConfig.vol_alert_on;
-    
+
     if(this.wExecution){
       this.info = JSON.parse(this.wExecution.configuration).pressure;
       this.speedalert = JSON.parse(this.wExecution.configuration).speed;
-  
+
       // console.log(this.speedalert, "speedalert");
       this.caudalNominal = JSON.parse(this.wExecution.configuration).water_flow;
       // console.log(this.caudalNominal, "caudal nominal");
     }
 
+
     this.arduinoService.getSensorObservable(Sensor.WATER_FLOW).subscribe({
       next:
       (data:number)  => {
         this.waterFlow = data;
-      
       }
     });
 

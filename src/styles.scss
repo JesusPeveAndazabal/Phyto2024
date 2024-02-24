@@ -7,6 +7,7 @@ html, body {
     background-color: #eee;
     color: var(--text-color);
 }
+
 .swal2-timer-progress-bar {
   background: #2196f3; /* Reemplaza 'tu-color-aqui' con el color deseado */
 }
@@ -207,9 +208,3 @@ ion-alert.select-alert.single-select-alert{
     }
 }
 
-.modal-container {
-  .custom-modal {
-    width: 80% !important;
-    height: 80% !important;
-  }
-}

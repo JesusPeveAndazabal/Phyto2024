@@ -185,4 +185,3 @@ export class SettingsComponent  implements OnInit {
     this.router.navigate(['/config'], { state: { update : true } });
   }
 }
-

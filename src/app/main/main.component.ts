@@ -61,7 +61,6 @@ export class MainComponent implements OnInit,AfterViewInit{
     private route : ActivatedRoute,
     public alerta: SettingsComponent,
     public arduinoService : ArduinoService
-    
     ) {
       // console.log(this.login, "main.component... constructor");
 
@@ -187,7 +186,6 @@ export class MainComponent implements OnInit,AfterViewInit{
       data : {id : this.lastWorkExecution!.id}
     };
     command.data.id = (await this.databaseService.getLastWorkExecution()).id;
-    
     console.log(command, "array de socket data");
     console.log(command.data.id, "id");
 
@@ -216,7 +214,6 @@ export class MainComponent implements OnInit,AfterViewInit{
               if (val){
                 this.localConfig = await this.databaseService.getLocalConfig();
                 this.lastWorkExecution = await this.databaseService.getLastWorkExecution();
-                
                 await this.openIfNotConnected();
                 let volume : WaterVolumes = { id :0 ,volume: val,work_exec_id : this.lastWorkExecution!.id };
                 // console.log(volume, "volume");
@@ -238,8 +235,7 @@ export class MainComponent implements OnInit,AfterViewInit{
                 this.arduinoService.inicializarContenedor(val,this.localConfig.vol_alert_on);
                 this.workStatus = WorkStatusChange.START;
                 this.classButtonPower = this.workStatus == WorkStatusChange.START ? "power-button-on" : "power-button-off";
-   
-                
+                this.arduinoService.iniciarCronometroProductivo();
 
                 //this.arduinoService.isRunning = true;
                 //Mostrar el loader con el mensaje cargando hasta que termine de regular

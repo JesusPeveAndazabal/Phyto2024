@@ -30,6 +30,9 @@ ion-footer::before{
   border-top-left-radius: 40px;
 }
 
+.no-scroll {
+  --overflow: hidden;
+}
 // #popover-info::part(content){
 //     top:auto;
 // }

@@ -67,8 +67,7 @@ export class AppComponent implements OnInit {
 
   ngOnInit(): void {
     console.log("App initialization", "app.component.ts");
-
-
+    
       let records = [];
       let records1 = [];
       let sended = [];

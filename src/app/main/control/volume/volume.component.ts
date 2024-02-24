@@ -22,7 +22,8 @@ export class VolumeComponent  implements OnInit,OnChanges {
   @Input("maxCurrentVolume") maxVolume : number = 0;
   @Input("currentVolume") volume : number = 0;
   @Input("currentPh") currentPh : number = 0;
-
+  @Input("latitudGPS") latitudGPS : number = 0;
+  @Input("longitudGPS") longitudGPS : number = 0;
     // Output
   // @Output() leftControlActiveChange: EventEmitter<boolean> = new EventEmitter<boolean>();
   // @Output() rightControlActiveChange: EventEmitter<boolean> = new EventEmitter<boolean>();

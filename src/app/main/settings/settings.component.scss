@@ -9,3 +9,6 @@ ion-content{
   --background : transparent !important;
 }
 
+:host-context(.modal-wrapper) {
+  max-width: 900px !important;
+}
