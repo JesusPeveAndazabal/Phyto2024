@@ -53,3 +53,6 @@ testem.log
 # System Files
 .DS_Store
 Thumbs.db
+bd/database.sqlite
+bd/database.sqlite
+bd/database.sqlite-journal

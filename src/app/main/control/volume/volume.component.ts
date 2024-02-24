@@ -59,7 +59,7 @@ export class VolumeComponent  implements OnInit,OnChanges {
     //this.setVolume(40);
     // this.animateWaves();
     // this.shouldBlink= true;
-    this.localConfig = await this.dbService.getLocalConfig();
+    this.localConfig = await this.dbService.getLocalConfig();    
     this.minVolume = this.localConfig.vol_alert_on;
     const intervalObservable = interval(1000); // Puedes ajustar el intervalo según sea necesario
 

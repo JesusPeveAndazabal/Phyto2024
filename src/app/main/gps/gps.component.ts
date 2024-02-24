@@ -70,7 +70,7 @@ export class GpsComponent  implements OnInit,AfterViewInit,OnChanges {
         geodesic: true,
         strokeColor: '#4986E7',
         strokeOpacity: 1.0,
-        strokeWeight: 3
+        strokeWeight: 3 
       });
 
       line.setMap(this.map);

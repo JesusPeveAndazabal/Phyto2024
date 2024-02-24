@@ -108,26 +108,25 @@ export class ArduinoService {
         // Enviar siempre cada 100ms pero solo guardar cada 1s
 
 
-        const iteration = async () =>{
+
+        const iteration = async () =>{ 
           let currentWork : WorkExecution = await this.databaseService.getLastWorkExecution();
 
           //Actualizar isRunning cada vez que se acabe el volumen de agua o se inicie el trabajo, o se finalice el trabajo.
-          if(currentWork && this.isRunning){
-
+          if(currentWork && this.isRunning){           
             let gps = data[`${Sensor.GPS}`];
-
+            
             delete data[`${Sensor.GPS}`];
             delete data[`${Sensor.VALVE_LEFT}`]; //Eliminar valvula izquierda
-            delete data[`${Sensor.VALVE_RIGHT}`]; //Eliminar valvula derecha
+            delete data[`${Sensor.VALVE_RIGHT}`]; //Eliminar valvula derecha 
             delete data[`${Sensor.PRESSURE_REGULATOR}`]; //Eliminar regulador de presion
-
 
             //Evaluar los eventos
             let has_events = false;
             let events = "";
 
             this.localConfig = await this.databaseService.getLocalConfig();
-
+           
             if(data[`${Sensor.PRESSURE}`] < this.localConfig.min_pressure || data[`${Sensor.PRESSURE}`] > this.localConfig.max_pressure){
               has_events = true;
               events = "LA PRESION ESTA FUERA DEL RANGO ESTABLECIDO";
@@ -135,7 +134,6 @@ export class ArduinoService {
               has_events = true;
               events = "EL CAUDAL ESTA FUERA DEL RANGO ESTABLECIDO";
             }
-
 
             let wExecutionDetail : WorkExecutionDetail =  {
               id_work_execution : currentWork.id, //Jalar el id del work execution
@@ -146,8 +144,7 @@ export class ArduinoService {
               has_events        : has_events, //Evaluar eventos
               events            : events, //Evaluar los eventos
               id                : 0,
-            };
-
+            }; 
             //Guardar en la db
             this.databaseService.saveWorkExecutionDataDetail(wExecutionDetail);
 
@@ -159,9 +156,8 @@ export class ArduinoService {
           iteration();
           this.now = currentTime;
         }
-
       }
-    },100);
+    },100); 
   }
 
   findBySensor(sensor : number): ArduinoDevice{
@@ -291,7 +287,7 @@ export class ArduinoService {
       }, 1000);
 
     }
-
+    
     iniciarCronometroImproductivo(): void{
       this.enTiempoProductivo = false;
       let tiempo = 0;
@@ -303,10 +299,6 @@ export class ArduinoService {
         }
       }, 1000);
     }
-
-
-
-
 
     alternarTiempo() {
       if (this.enTiempoProductivo) {
@@ -366,8 +358,7 @@ export class ArduinoService {
       this.timerImproductive = setInterval(() => {
         this.formatearTiempo(this.currentTimeImproductive++);
       }, 1000);
-        }
-
+    }
 
     formatearTiempo(tiempo: number): string {
       const horas = Math.floor(tiempo / 3600);
@@ -381,7 +372,6 @@ export class ArduinoService {
         this.agregarCeros(segundos)
       );
     }
-
     // Función para agregar ceros a los números menores que 10
     agregarCeros(numero: number): string {
       return numero < 10 ? '0' + numero : '' + numero;
