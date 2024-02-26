@@ -86,6 +86,7 @@ export class ControlComponent  implements OnInit {
       switchMap(() => this.arduinoService.getSensorObservable(Sensor.WATER_FLOW))
     ).subscribe((valorDelSensor:number) => {
       this.waterFlow = valorDelSensor;
+      console.log("Valor del caudal" , this.waterFlow);
       this.maxVolume = this.arduinoService.initialVolume;
       config.maxVolume = this.arduinoService.initialVolume;
       if(this.arduinoService.isRunning){
@@ -138,24 +139,28 @@ export class ControlComponent  implements OnInit {
     });
 
     //VOLUMEN
-    // Observable que emite cada segundo
-    // intervalObservable.pipe(
-    //   startWith(0), // Emite un valor inicial para que comience inmediatamente
-    //   switchMap(() => this.arduinoService.getSensorObservable(Sensor.VOLUME))
-    // ).subscribe((valorDelSensor:number) => {
-    //   this.volume = this.arduinoService.currentRealVolume;
+    //sObservable que emite cada segundo
+/*     intervalObservable.pipe(
+      startWith(0), // Emite un valor inicial para que comience inmediatamente
+      switchMap(() => this.arduinoService.getSensorObservable(Sensor.VOLUME))
+    ).subscribe((valorDelSensor:number) => {
+      this.volume = this.arduinoService.currentRealVolume;
+      let valorVolumen = valorDelSensor;
+      let valorRealVolumen = 
+      console.log("Volumen" , this.volume);
 
-    //   if (this.volume < this.minVolume && this.arduinoService.isRunning) {
-    //     console.log("Debe rellenar el tanque - Valvulas cerradas" , this.volume , this.minVolume);
-    //     this.shouldBlink = true;
-    //     // this.toggleValvulaDerecha();
-    //     // this.toggleValvulaIzquierda();
-    //     //this.arduinoService.isRunning = false;
-    //   } else {
-    //     this.shouldBlink = false;
-    //   }
-    // });
+      if (this.volume < this.minVolume && this.arduinoService.isRunning) {
+        console.log("Debe rellenar el tanque - Valvulas cerradas" , this.volume , this.minVolume);
+        this.shouldBlink = true;
+        // this.toggleValvulaDerecha();
+        // this.toggleValvulaIzquierda();
+        //this.arduinoService.isRunning = false;
+      } else {
+        this.shouldBlink = false;
+      }
+    }); */
 
+    
     // PH
     this.arduinoService.getSensorObservable(Sensor.PH).subscribe((valorDelSensor:number) => {
       this.currentPh = valorDelSensor;

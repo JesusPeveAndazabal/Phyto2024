@@ -74,7 +74,7 @@ export class VolumeComponent  implements OnInit,OnChanges {
       if (this.arduinoService.currentRealVolume < this.minVolume && this.arduinoService.isRunning) {
         this.shouldBlink = true;
         this.toggleValvulaDerecha();
-        this.toggleValvulaIzquierda()
+        this.toggleValvulaIzquierda();
         // this.arduinoService.deactivateRightValve();
         // this.arduinoService.deactivateLeftValve();
         this.arduinoService.isRunning = false;

@@ -203,7 +203,8 @@ export class ArduinoService {
       //console.log('Enviando comando de regulación de presión...', barPressure);
 
       // Aquí deberías incluir la lógica para enviar el comando al dispositivo, por ejemplo:
-      this.findBySensor(regulatorId).sendCommand(`${regulatorId}|${barPressure.toFixed(1)}`);
+      this.findBySensor(regulatorId).sendCommand(`${regulatorId}|${barPressure}`);
+      console.log("Comando" , `${regulatorId}|${barPressure}`);
     }
 
     //Metodo para resetear el volumen inicial y minimo
@@ -309,10 +310,12 @@ export class ArduinoService {
     //console.log(`Nuevo valor para ${sensorType}: ${value}`)
     if (this.sensorSubjectMap.has(sensorType)) {
       this.sensorSubjectMap.get(sensorType)!.next(value);
-
+      let volumenInicial = this.initialVolume;
       if (sensorType === Sensor.VOLUME) {
         if (this.currentRealVolume > this.minVolume && this.isRunning) {
-          this.currentRealVolume -= value as number;
+          //this.currentRealVolume -= value as number;
+          let valor = value as number;
+          this.currentRealVolume = volumenInicial - valor;
           console.log("Real Volume", this.currentRealVolume);
         }
       }

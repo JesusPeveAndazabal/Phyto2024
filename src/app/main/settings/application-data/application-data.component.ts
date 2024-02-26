@@ -93,6 +93,7 @@ export class ApplicationDataComponent  implements OnInit {
   }
 
   async confirm() {
+    console.log("Boton confirmar");
     this.isSubmitted = true;
     if(this.formData.valid){
       let wExecution : WorkExecution ={

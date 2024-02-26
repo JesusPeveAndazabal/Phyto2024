@@ -8,6 +8,8 @@ import { UnitPressure, UnitPressureEnum,config,convertPressureUnit } from './../
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import * as moment from 'moment';
 import Swal from 'sweetalert2';
+import { ArduinoService } from '../../../core/services/arduino/arduino.service';
+import { SettingsComponent } from '../settings.component';
 //import { SettingsComponent } from '../settings.component';
 // import { DialogService } from 'primeng/dynamicdialog';
 
@@ -35,11 +37,11 @@ export class ApplicationValuesComponent  implements OnInit {
   pressures_items = [{label: "Pressure", value: 0}];
 
   private pressure_values : any[] = [];
-
+  info: number = 0;
   currentWorkExecution : WorkExecution | undefined = undefined;
   private invalid_rows = 0;
 
-  constructor( private modalCtrl: ModalController, private dbService : DatabaseService,
+  constructor(private settingsComponent:SettingsComponent, private arduinoService:ArduinoService, private modalCtrl: ModalController, private dbService : DatabaseService,
     private alertController : AlertController,private fb:FormBuilder) {
       this.formData = this.fb.group({
         volume: [0,[Validators.required,]],
@@ -115,7 +117,7 @@ export class ApplicationValuesComponent  implements OnInit {
   }
 
   async confirm() {
-
+    console.log("Boton confirmar async");
     this.isSubmitted = true;
     if(this.formData.valid){
 
@@ -128,6 +130,8 @@ export class ApplicationValuesComponent  implements OnInit {
 
         return false;
       }
+
+      //this.arduinoService.regulatePressureWithBars()
       this.nozzleConfig = this.nozzleConfig.map(p => {return { type : p.type, number : p.number, color : parseInt(p.color.toString()) }});
       this.weConfiguration = {
         nozzles : this.nozzleConfig,
@@ -138,6 +142,8 @@ export class ApplicationValuesComponent  implements OnInit {
         ...this.formData.value
       }
 
+      console.log("Deberria regular" ,this.weConfiguration?.pressure);
+      this.arduinoService.regulatePressureWithBars(this.weConfiguration?.pressure);
 
       let wExecution : WorkExecution ={
         id : this.currentWorkExecution ? this.currentWorkExecution.id : 0,
@@ -176,6 +182,7 @@ export class ApplicationValuesComponent  implements OnInit {
         await this.dbService.updateWorkExecutionData(wExecution)
         .then(async()=>{
           config.lastWorkExecution = wExecution;
+          //this.arduinoService.regulatePressureWithBars(this.settingsComponent.info);
           return this.modalCtrl.dismiss(null, 'confirm','application-values-modal');
 
         })
