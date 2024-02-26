@@ -72,7 +72,7 @@ export class AppComponent implements OnInit {
       let sended = [];
       let onExecution = false; //Variable de control que evita envíos duplicados y sobre carga del tráfico.
 
-/*       setInterval(()=>{
+      setInterval(()=>{
         if(!onExecution){
           onExecution = true;
 
@@ -154,6 +154,6 @@ export class AppComponent implements OnInit {
         iteration();
 
         }
-      },9000);  */
+      },9000); 
   }
 }
