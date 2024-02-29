@@ -1,6 +1,9 @@
 .main-container{
   &::part(background){
-      background-color: #997952;
+    background-image: url('../../assets/images/fondo3.avif');
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center center;
   }
 }
 

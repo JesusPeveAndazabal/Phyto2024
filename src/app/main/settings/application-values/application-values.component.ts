@@ -26,6 +26,7 @@ export class ApplicationValuesComponent  implements OnInit {
   weConfiguration : WorkExecutionConfiguration | undefined;
   nozzleConfig : NozzlesConfiguration[] = [];
 
+  selectedColors: number[] = [];
   quantity : number = 0;
   type : any = 0;
   total : number = 0;
@@ -142,7 +143,7 @@ export class ApplicationValuesComponent  implements OnInit {
         ...this.formData.value
       }
 
-      console.log("Deberria regular" ,this.weConfiguration?.pressure);
+      //console.log("Deberria regular" ,this.weConfiguration?.pressure);
       this.arduinoService.regulatePressureWithBars(this.weConfiguration?.pressure);
 
       let wExecution : WorkExecution ={
@@ -195,12 +196,13 @@ export class ApplicationValuesComponent  implements OnInit {
     return false;
   }
 
-  getColorCode(id : number) {
-    // console.log(this.nozzleColors.find(c => c.id === id)!.code, "getColorCode");
-    return this.nozzleColors.find(c => c.id === id)!.code;
+  getColorCode(id: number): string {
+    const color = this.nozzleColors.find(c => c.id === id);
+    //console.log("Color" , color);
+    return color ? color.code : 'transparent'; // Devuelve el código del color si se encuentra, de lo contrario, devuelve 'transparent'
   }
-
-
+  	
+  
   handleReorder() {
     //Reorder and changing number of nozzles to new order
     this.nozzleConfig.forEach((item,index) => { item.number = index +1; });

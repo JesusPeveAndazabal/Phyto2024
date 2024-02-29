@@ -43,13 +43,8 @@ export class PressureComponent  implements OnChanges,AfterViewInit {
   }
 
   reset(){
-    this.efficiency_pressure = { value : 0.00, unit: "%"};
-    this.pressure.value = 0.00;
     this.arduinoService.regulatePressureWithBars(0);
-    //const reset = this.arduinoService.resetPressure();
     this.arduinoService.resetVolumen();
-    this.arduinoService.isRunning = false;
-    console.log(this.arduinoService.isRunning, "isRunning");
   }
 
   ngOnChanges(changes: SimpleChanges) {

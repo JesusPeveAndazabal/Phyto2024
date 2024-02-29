@@ -22,7 +22,7 @@ export class AtomizerAuthInterceptor implements HttpInterceptor {
                   Authorization: `Token ${token}`
                 }
             });
-            console.log('Request:', request);
+            //console.log('Request:', request);
         }
         return next.handle(request);
     }

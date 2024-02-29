@@ -296,7 +296,7 @@ export class DatabaseService extends ElectronService {
           console.error("Error al cerrar la base de datos", err);
           reject(err);
         } else {
-          console.log("Base de datos cerrada");
+          //console.log("Base de datos cerrada");
           resolve(true);
         }
       });
@@ -350,7 +350,7 @@ export class DatabaseService extends ElectronService {
           console.error("Error al cerrar la base de datos", err);
           reject(err);
         } else {
-          console.log("Base de datos cerrada");
+          //console.log("Base de datos cerrada");
           resolve(true);
         }
       });
@@ -404,7 +404,7 @@ export class DatabaseService extends ElectronService {
           console.error("Error al cerrar la base de datos", err);
           reject(err);
         } else {
-          console.log("Base de datos cerrada");
+          //console.log("Base de datos cerrada");
           resolve(true);
         }
       });
@@ -458,7 +458,7 @@ export class DatabaseService extends ElectronService {
           console.error("Error al cerrar la base de datos", err);
           reject(err);
         } else {
-          console.log("Base de datos cerrada");
+          //console.log("Base de datos cerrada");
           resolve(true);
         }
       });
@@ -512,7 +512,7 @@ export class DatabaseService extends ElectronService {
           console.error("Error al cerrar la base de datos", err);
           reject(err);
         } else {
-          console.log("Base de datos cerrada");
+          //console.log("Base de datos cerrada");
           resolve(true);
         }
       });
@@ -958,7 +958,7 @@ export class DatabaseService extends ElectronService {
           console.error("Error al cerrar la base de datos", err);
           reject(err);
         } else {
-          console.log("Base de datos cerrada");
+          //console.log("Base de datos cerrada");
           resolve(true);
         }
       });
@@ -1010,7 +1010,7 @@ export class DatabaseService extends ElectronService {
           console.error("Error al cerrar la base de datos", err);
           reject(err);
         } else {
-          console.log("Base de datos cerrada");
+          //console.log("Base de datos cerrada");
           resolve(true);
         }
       });
@@ -1062,7 +1062,7 @@ export class DatabaseService extends ElectronService {
           console.error("Error al cerrar la base de datos", err);
           reject(err);
         } else {
-          console.log("Base de datos cerrada");
+          //console.log("Base de datos cerrada");
           resolve(true);
         }
       });
@@ -1117,7 +1117,7 @@ export class DatabaseService extends ElectronService {
           console.error("Error al cerrar la base de datos", err);
           reject(err);
         } else {
-          console.log("Base de datos cerrada");
+          //console.log("Base de datos cerrada");
           resolve(true);
         }
       });
@@ -1153,7 +1153,7 @@ export class DatabaseService extends ElectronService {
     return new Promise((resolve, reject) => {
       let db = new this.sqlite.Database(this.file);
       let sql = "INSERT INTO local_conf (api_server,vol_alert_on,min_wflow,max_wflow,unit_pressure,min_pressure,max_pressure, fecha) VALUES (?,?,?,?,?,?,?,?);";
-      db = db.run(sql,[o.api_server,o.vol_alert_on,o.min_wflow,o.max_wflow,o.unit_pressure,o.min_pressure,o.max_pressure, moment.now()],
+      db = db.run(sql,[o.api_server,o.vol_alert_on,o.min_wflow,o.max_wflow,o.unit_pressure,o.min_pressure,o.max_pressure, moment().format('HH:mm:ss')],
         (err : Error)=>{
           if(err){
             console.log("SQLITE INSERT error", err);
@@ -1187,7 +1187,7 @@ export class DatabaseService extends ElectronService {
     return new Promise((resolve, reject) => {
       let db = new this.sqlite.Database(this.file);
       let sql = "INSERT INTO login (operador,supervisor, fechahora) VALUES (?,?,?);";
-      db = db.run(sql,[operador,supervisor, moment.now()],
+      db = db.run(sql,[operador,supervisor, moment().format('HH:mm:ss')],
         (err : Error)=>{
           if(err){
             console.log("SQLITE INSERT error", err);

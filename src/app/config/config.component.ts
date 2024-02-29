@@ -34,7 +34,7 @@ export class ConfigComponent implements OnInit {
 
     this.formData = this.fb.group({
       // ws_server: ['',[Validators.required,Validators.pattern('(?:(?:(?:ht|f)tp)s?://)|(ws?s)?[\\w_-]+(?:\\.[\\w_-]+)+([\\w.,@?^=%&:/~+#-]*[\\w@?^=%&/~+#-])?')]],
-      api_server: ['',[Validators.required,Validators.pattern('(?:(?:(?:ht|f)tp)s?://)|(ws?s)?[\\w_-]+(?:\\.[\\w_-]+)+([\\w.,@?^=%&:/~+#-]*[\\w@?^=%&/~+#-])?')]],
+      api_server: 'http://192.168.139.209:8000',
       vol_alert_on: [0,[Validators.required,Validators.min(1)]],
       min_wflow: [0,[Validators.required,Validators.min(1)]],
       max_wflow: [0,[Validators.required,Validators.min(1)]],
@@ -67,7 +67,7 @@ export class ConfigComponent implements OnInit {
   }
 
   async save(){
-    console.log("el botón 'Validar y Guardar' fue presionado",this.formData, "config.component.ts 1");
+    //console.log("el botón 'Validar y Guardar' fue presionado",this.formData, "config.component.ts 1");
     // alert("info correcta");
     if(this.formData.valid){
       environment.apiURL = this.formData.value.api_server;
@@ -75,7 +75,7 @@ export class ConfigComponent implements OnInit {
 
       // VALIDACION DE API
       let validAPI = await this.syncPrimaryTables();
-      console.log(validAPI, "validacion de api");
+      //console.log(validAPI, "validacion de api");
       if(!validAPI){
         this.alerta.mostrarAlertaChica("<p>No se pudo validar URL del servidor API.</p>");
         // alert("");
@@ -91,7 +91,7 @@ export class ConfigComponent implements OnInit {
       // const info = await this.dbService.getLastWorkExecution();
       // console.log(info, "lastWorkExecution");
 
-      console.log("back...",this.location.getState(), "config.component.ts 3");
+      //console.log("back...",this.location.getState(), "config.component.ts 3");
       if((this.location.getState() as any)?.update){
         this.location.back();
       // }else if(info === undefined){
@@ -111,7 +111,7 @@ export class ConfigComponent implements OnInit {
    */
   async syncPrimaryTables() : Promise<boolean>{
     this.loading_message = "Verificando url del API...";
-    console.log(await firstValueFrom(this.apiService.getPeople(environment.token)), "config.component.ts");
+    //console.log(await firstValueFrom(this.apiService.getPeople(environment.token)), "config.component.ts");
     try{
       // await this.dbService.openConnection();
       const people = await firstValueFrom(this.apiService.getPeople(environment.token));
@@ -207,7 +207,7 @@ export class ConfigComponent implements OnInit {
       return false;
     }
     finally{
-      console.log("aquí debería cerrarse la base de datos");
+      //console.log("aquí debería cerrarse la base de datos");
       // await this.dbService.closeDB();
     }
   }

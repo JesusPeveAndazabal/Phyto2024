@@ -75,6 +75,8 @@ export class ArduinoService {
 
   constructor( private electronService: ElectronService , private databaseService : DatabaseService) {
     this.setupSensorSubjects();
+/*     this.deactivateLeftValve();
+    this.deactivateRightValve();     */  
 
     for(let i = 1; i <= Configuration.nDevices; i++){
       this.listArduinos.push(
@@ -87,6 +89,15 @@ export class ArduinoService {
     setInterval(async ()=>{
       let onExecution = false;
 
+      //Agregar sensores para futuros cambios 
+      this.data = {
+        ...this.data,
+        [Sensor.PH]:0,
+        [Sensor.TEMPERATURE]:0,
+        [Sensor.HUMIDITY]:0,
+        [Sensor.VOLUME_CONTAINER]:0,
+      }
+
       this.listArduinos.forEach( arduino => {
         arduino.message_from_device.forEach((sensor)=>{
         });
@@ -98,7 +109,7 @@ export class ArduinoService {
         let sensor = parseInt(value[0]) as Sensor;
         this.notifySensorValue(sensor,sensor == Sensor.GPS?value[1] as number[]:  value[1] as number);
       });
-
+                
       if(!onExecution){
         onExecution = true;
         // Loop que envía los registros por guardar en el servidor vía API/REST
@@ -111,17 +122,19 @@ export class ArduinoService {
             //Evaluar Tiempo Productivo e improductivo
             if(this.data[`${Sensor.WATER_FLOW}`] > 1){
               //Contar productivo
-              instance.tiempoImproductivo.stop();
               instance.tiempoProductivo.start();
+              instance.tiempoImproductivo.stop();
             }
             else{
               //Improductivo
-              instance.tiempoProductivo.stop();
               instance.tiempoImproductivo.start();
+              instance.tiempoProductivo.stop();
             }
 
             currentWork.downtime = instance.tiempoImproductivo.time();
             currentWork.working_time = instance.tiempoProductivo.time();
+            //console.log("TIEMPO IMPRODUCTIVO" , currentWork.downtime.format('H:mm:ss'));
+            //console.log("TIEMPO PRODUCTIVO" , currentWork.working_time.format('H:mm:ss'));
             //Actualizar el tp e i en la db local
             await this.databaseService.updateTimeExecution(currentWork);
           }
@@ -129,12 +142,13 @@ export class ArduinoService {
           //Actualizar isRunning cada vez que se acabe el volumen de agua o se inicie el trabajo, o se finalice el trabajo.
           if(currentWork && this.isRunning){           
             let gps = this.data[`${Sensor.GPS}`];
+   
             
             delete this.data[`${Sensor.GPS}`];
             delete this.data[`${Sensor.VALVE_LEFT}`]; //Eliminar valvula izquierda
             delete this.data[`${Sensor.VALVE_RIGHT}`]; //Eliminar valvula derecha 
             delete this.data[`${Sensor.PRESSURE_REGULATOR}`]; //Eliminar regulador de presion
-
+            
             //Evaluar los eventos
             let has_events = false;
             let events = "";
@@ -204,7 +218,7 @@ export class ArduinoService {
 
       // Aquí deberías incluir la lógica para enviar el comando al dispositivo, por ejemplo:
       this.findBySensor(regulatorId).sendCommand(`${regulatorId}|${barPressure}`);
-      console.log("Comando" , `${regulatorId}|${barPressure}`);
+      //console.log("Comando" , `${regulatorId}|${barPressure}`);
     }
 
     //Metodo para resetear el volumen inicial y minimo
@@ -259,7 +273,7 @@ export class ArduinoService {
     //Regular la presion
     regulatePressure(): void {
       if (this.inputPressureValue !== undefined) {
-        console.log(this.inputPressureValue);
+        //console.log(this.inputPressureValue);
       this.regulatePressureWithBars(this.inputPressureValue);
       }
     }
@@ -316,7 +330,7 @@ export class ArduinoService {
           //this.currentRealVolume -= value as number;
           let valor = value as number;
           this.currentRealVolume = volumenInicial - valor;
-          console.log("Real Volume", this.currentRealVolume);
+          //console.log("Real Volume", this.currentRealVolume);
         }
       }
     }

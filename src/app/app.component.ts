@@ -65,7 +65,7 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    console.log("App initialization", "app.component.ts");
+    //console.log("App initialization", "app.component.ts");
     
       let records = [];
       let records1 = [];
@@ -93,7 +93,8 @@ export class AppComponent implements OnInit {
                   else{
                     //Actualizar
                     // Lógica para actualizar los registros en el servidor si es necesario
-                    let response = await this.databaseService.updateWorkExecutionData(wExecution);
+                    wExecution.configuration = JSON.parse(wExecution.configuration);
+                    let workExecutionActualizado = await firstValueFrom(this.apiService.sendUpdateExecution(wExecution));
                   }
                   
                   if(response.id){

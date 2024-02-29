@@ -80,4 +80,15 @@ export class ApiService {
     };
     return this.http.post<WorkExecutionDetail>(`${Configuration.urlRest}/api/work-execution-data-app/` , wExecutionDetail, httpOptions);
   }
+
+  //Metodo para actualizar en el server
+  public sendUpdateExecution(wExecution: WorkExecution): Observable<WorkExecution>{
+    let httpOptions = {
+      headers : new HttpHeaders({
+        'Conten-Type': 'application/json',
+        Authorization: `Bearer ${Configuration.token}`
+      })
+    };
+    return this.http.put<WorkExecution>(`${Configuration.urlRest}/api/work-execution-app/${wExecution.id_from_server}/`, wExecution, httpOptions)
+  };
 }

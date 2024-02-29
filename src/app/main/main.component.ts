@@ -212,12 +212,16 @@ export class MainComponent implements OnInit,AfterViewInit{
               console.log(val, "val confirmar");
               if (val){
                 this.localConfig = await this.databaseService.getLocalConfig();
+                console.log("GETLOCALCONFIG" , this.localConfig);
                 this.lastWorkExecution = await this.databaseService.getLastWorkExecution();
+                console.log("GETLASTWORK" , this.lastWorkExecution);
                 await this.openIfNotConnected();
                 let volume : WaterVolumes = { id :0 ,volume: val,work_exec_id : this.lastWorkExecution!.id };
-                // console.log(volume, "volume");
+                console.log(volume, "volume");
                 let conf = JSON.parse(this.lastWorkExecution!.configuration) as WorkExecutionConfiguration;
-                conf.volume += val;
+                console.log("CONF.VOLUMEN" , conf.volume);
+                console.log("VAL" , val);
+                conf.volume = conf.volume + val;
                 console.log(volume, this.lastWorkExecution!, "info a guardar");
                 // console.log(this.lastWorkExecution!, "this.lastWorkExecution!.configuration");
                 this.lastWorkExecution!.configuration = JSON.stringify(conf);
@@ -231,6 +235,7 @@ export class MainComponent implements OnInit,AfterViewInit{
 
                 //Configurar el volumen mínimo e inicial en el servicio.
                 console.log(this.localConfig.vol_alert_on, "this.localConfig.vol_alert_on");
+
                 this.arduinoService.inicializarContenedor(val,this.localConfig.vol_alert_on);
                 this.workStatus = WorkStatusChange.START;
                 this.classButtonPower = this.workStatus == WorkStatusChange.START ? "power-button-on" : "power-button-off";

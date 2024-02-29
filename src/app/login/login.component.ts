@@ -65,45 +65,20 @@ export class LoginComponent implements OnInit {
     // await this.loader.present();
 
     await this.databaseService.openConnection();
-
-    // let command : SocketData = {
-    //   event:SocketEvent.GET_TOKEN,
-    //   type: 0
-    //   data : {}
-    // }
   }
 
-  // login(){
-  //   console.log(this.formData.valid, "login");
-  //   if(this.formData.valid){
-
-  //     if(this.personData.find(person => (person.code == this.formData.value.code
-  //       || person.document == this.formData.value.code) && person.type == PersonType.OPERADOR))
-  //     {
-
-  //     this.databaseService.saveLogin(this.formData.value.code, this.formData.value.supervisor);
-
-  //     this.router.navigateByUrl('/main');
-  //     }
-  //     else{
-  //       this.presentToast("middle");
-  //     }
-  //   }
-  // }
-
-
-
-  login(){
+  async login(){
     // console.log(this.formData.valid, "login");
+    //console.log("Ingreso al login : 1 vez");
     if(this.formData.valid){
+      //console.log("Ingreso a la condicion");
       // console.log(this.personData.find(person => (person.code == this.formData.value.code)), "personData2");
       // console.log(firstValueFrom(this.apiService.getPeople(environment.token)), "personData2");
       if(this.personData.find(person => (person.code == this.formData.value.code
         || person.document == this.formData.value.code) && person.type == PersonType.OPERADOR))
       {
 
-      this.databaseService.saveLogin(this.formData.value.code, this.formData.value.supervisor);
-
+      await this.databaseService.saveLogin(this.formData.value.code, this.formData.value.supervisor);
       this.router.navigateByUrl('/main');
       }
       else{

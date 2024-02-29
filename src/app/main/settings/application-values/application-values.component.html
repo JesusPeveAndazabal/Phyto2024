@@ -94,12 +94,13 @@
                 <select [(ngModel)]="item.type" (change)="updateSummary($event)">
                   <option *ngFor="let type of nozzleTypes" value="{{type.id}}">{{type.name}}</option>
                 </select>
-                <select [(ngModel)]="item.color" (change)="updateSummary($event)">
-                  <option *ngFor="let item of nozzleColors" value="{{item.id}}">
+                <select [(ngModel)]="item.color" (change)="updateSummary($event)" placeholder="Elija el color">
+                  <option *ngFor="let item of nozzleColors" value="{{item.id}}" placeholder="Elija el color">
                     <div [style.width.px]="60" [style.height.px]="18" [style.backgroundColor]="getColorCode(item.id)"></div>
                     <div [style.width.px]="100" [style.height.px]="18" [style.backgroundColor]="item.code">{{ item.name }}</div>
                   </option>
-                </select>
+                </select> 
+  
                 <!-- <p-dropdown [options]="nozzleColors" [(ngModel)]="item.color" optionLabel="code" optionValue="id" placeholder="Elija color" appendTo="body" (onChange)="updateSummary($event)">
                   <ng-template pTemplate="selectedItem">
                     <div [style.width.px]="60" [style.height.px]="18" [style.backgroundColor]="getColorCode(item.color)"></div>
