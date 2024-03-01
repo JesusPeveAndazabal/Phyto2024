@@ -68,14 +68,15 @@
       <h6 style="color: aliceblue; margin-top:-1px">Longitud</h6>
     </div>
   </div>
+  <!-- <button class="btn-lg" style="margin-left: 66px;" (click)="apagarValvulas()" >OFF</button> -->
   <div class="button-group chevrons w-full flex justify-content-center">
     <button class="button left" (click)="toggleValvulaIzquierda()" [ngClass]="leftControlActive ? 'selected' : ''">
       <i [ngClass]="leftControlActive ? 'bi bi-unlock' : 'bi bi-lock'"></i>
 		  <!-- <ion-icon  [name]="leftControlActive ? 'lock-open-outline' : 'lock-closed-outline'"></ion-icon> -->
-	  </button>
+	</button>
     <button class="button" (click)="toggleValvulaDerecha()" [ngClass]="rightControlActive ? 'selected' : ''">
       <i [ngClass]="rightControlActive ? 'bi bi-unlock' : 'bi bi-lock'" ></i>
 		  <!-- <ion-icon [name]="rightControlActive ? 'lock-open-outline' : 'lock-closed-outline'"></ion-icon> -->
-	  </button>
+	</button>
   </div>
 </div>

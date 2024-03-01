@@ -37,7 +37,7 @@ export class PressureComponent  implements OnChanges,AfterViewInit {
         value : convertPressureUnit(this.wConfig!.pressure,UnitPressureEnum.BAR,this.wConfig!.unit),
         unit : UnitPressure.find(p => p.value == this.wConfig!.unit)?.name
       };
-      this.teoric_pressure.value = parseFloat(parseFloat(this.teoric_pressure.value).toFixed(2));
+      this.teoric_pressure.value = parseFloat(parseFloat(this.teoric_pressure.value).toFixed(1));
       this.pressure.unit = UnitPressure.find(p => p.value == this.wConfig!.unit)?.name;
     }
   }
@@ -55,7 +55,7 @@ export class PressureComponent  implements OnChanges,AfterViewInit {
         unit : UnitPressure.find(p => p.value == this.wConfig!.unit)?.name
       };
 
-      this.teoric_pressure.value = parseFloat(parseFloat(this.teoric_pressure.value).toFixed(2));
+      this.teoric_pressure.value = parseFloat(parseFloat(this.teoric_pressure.value).toFixed(1));
       this.pressure.unit = UnitPressure.find(p => p.value == this.wConfig!.unit)?.name;
     }
     else if(changes['real_pressure']){

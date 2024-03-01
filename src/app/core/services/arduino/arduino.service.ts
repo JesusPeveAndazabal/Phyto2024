@@ -75,8 +75,6 @@ export class ArduinoService {
 
   constructor( private electronService: ElectronService , private databaseService : DatabaseService) {
     this.setupSensorSubjects();
-/*     this.deactivateLeftValve();
-    this.deactivateRightValve();     */  
 
     for(let i = 1; i <= Configuration.nDevices; i++){
       this.listArduinos.push(
@@ -105,6 +103,9 @@ export class ArduinoService {
         arduino.message_from_device = new Map<Sensor, number|number[]>();
       });
 
+      this.deactivateLeftValve();
+      this.deactivateRightValve();
+      
       Object.entries(this.data).forEach((value) => {
         let sensor = parseInt(value[0]) as Sensor;
         this.notifySensorValue(sensor,sensor == Sensor.GPS?value[1] as number[]:  value[1] as number);
@@ -112,6 +113,7 @@ export class ArduinoService {
                 
       if(!onExecution){
         onExecution = true;
+
         // Loop que envía los registros por guardar en el servidor vía API/REST
         // Enviar siempre cada 100ms pero solo guardar cada 1s
 

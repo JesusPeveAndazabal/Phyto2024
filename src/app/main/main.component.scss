@@ -1,6 +1,6 @@
 .main-container{
   &::part(background){
-    background-image: url('../../assets/images/fondo3.avif');
+    background-image: url('../../assets/images/fondo5.avif');
     background-repeat: no-repeat;
     background-size: cover;
     background-position: center center;
@@ -25,11 +25,11 @@ ion-footer::before{
   padding-bottom: 10px !important;
 }
 .left-menu{
-  background-color: #122f86;
+  background-color: #040403;
   border-top-right-radius: 40px;
 }
 .right-menu{
-  background-color: #122f86;
+  background-color: #040403;
   border-top-left-radius: 40px;
 }
 

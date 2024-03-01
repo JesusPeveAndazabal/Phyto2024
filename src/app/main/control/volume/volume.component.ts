@@ -73,12 +73,7 @@ export class VolumeComponent  implements OnInit,OnChanges {
 
       if (this.arduinoService.currentRealVolume < this.minVolume && this.arduinoService.isRunning) {
         this.shouldBlink = true;
-/*         this.toggleValvulaDerecha();
-        this.toggleValvulaIzquierda(); */
-       /*  this.desactivarIzquierda();
-        this.desactivarDerecha(); */
-        // this.arduinoService.deactivateRightValve();
-        // this.arduinoService.deactivateLeftValve();
+        this.apagarValvulas();
         this.arduinoService.isRunning = false;
       } else {
         this.shouldBlink = false;
@@ -139,14 +134,11 @@ export class VolumeComponent  implements OnInit,OnChanges {
     }
   }
 
-  desactivarIzquierda():void{
-    this.arduinoService.deactivateLeftValve();
+  apagarValvulas():void{
     this.leftControlActive = false;
-  }
-
-  desactivarDerecha():void{
-    this.arduinoService.deactivateRightValve();
     this.rightControlActive = false;
+    this.arduinoService.deactivateLeftValve();
+    this.arduinoService.deactivateRightValve();
   }
 
   toggleValvulaIzquierda():void{
