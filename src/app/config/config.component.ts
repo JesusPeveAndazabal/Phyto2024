@@ -70,11 +70,13 @@ export class ConfigComponent implements OnInit {
     //console.log("el botón 'Validar y Guardar' fue presionado",this.formData, "config.component.ts 1");
     // alert("info correcta");
     if(this.formData.valid){
+      console.log("condicion1");
       environment.apiURL = this.formData.value.api_server;
       environment.minVolume = this.formData.value.vol_alert_on;
 
       // VALIDACION DE API
       let validAPI = await this.syncPrimaryTables();
+      console.log("ValidaApi" , validAPI);
       //console.log(validAPI, "validacion de api");
       if(!validAPI){
         this.alerta.mostrarAlertaChica("<p>No se pudo validar URL del servidor API.</p>");

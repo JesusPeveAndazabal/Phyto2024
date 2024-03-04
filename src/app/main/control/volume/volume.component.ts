@@ -2,7 +2,7 @@ import { interval, startWith, switchMap } from 'rxjs';
 import { ArduinoService } from '../../../core/services/arduino/arduino.service';
 import { WorkExecution } from './../../../core/models/work-execution';
 import { Sensor, config } from './../../../core/utils/global';
-import { Component, EventEmitter, Injectable, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Injectable, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
 import { DatabaseService } from '../../../core/services';
 import { LocalConf } from '../../../core/models/local_conf';
 // import { WebSocketClientService } from 'src/app/core/services/services';
@@ -42,7 +42,7 @@ export class VolumeComponent  implements OnInit,OnChanges {
   percentVolume = 0;
   derecha: boolean = false;
   izquierda: boolean = false;
-  constructor(public arduinoService :ArduinoService, private dbService: DatabaseService) {
+  constructor(public arduinoService :ArduinoService, private dbService: DatabaseService,private changeDetectorRef: ChangeDetectorRef) {
 
    }
 
@@ -72,7 +72,7 @@ export class VolumeComponent  implements OnInit,OnChanges {
 
 
       if (this.arduinoService.currentRealVolume < this.minVolume && this.arduinoService.isRunning) {
-        this.shouldBlink = true;
+        //this.shouldBlink = true;
         this.apagarValvulas();
         this.arduinoService.isRunning = false;
       } else {
@@ -137,8 +137,11 @@ export class VolumeComponent  implements OnInit,OnChanges {
   apagarValvulas():void{
     this.leftControlActive = false;
     this.rightControlActive = false;
+    console.log("ESTADO IZQUIERDA", this.rightControlActive);
+    console.log("ESTADO DERECHA", this.leftControlActive);
     this.arduinoService.deactivateLeftValve();
     this.arduinoService.deactivateRightValve();
+    //this.changeDetectorRef.detectChanges();
   }
 
   toggleValvulaIzquierda():void{

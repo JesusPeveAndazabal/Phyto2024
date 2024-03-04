@@ -193,7 +193,7 @@ export class DatabaseService extends ElectronService {
 
           db = db.exec(sql);
           db.close();
-          return process.nextTick(() => resolve(db));
+          process.nextTick(() => resolve(db));
       }
     });
   }
@@ -546,11 +546,19 @@ export class DatabaseService extends ElectronService {
     return new Promise<WorkExecution>((resolve, reject) => {
       let db = new this.sqlite.Database(this.file);
       let sql = "SELECT * from work_execution WHERE is_finished = 0 ORDER BY id DESC LIMIT 1";
-      db.get(sql,[ ],(err,rows : WorkExecution)=>{
+      db.get(sql,[ ],(err,rows : any)=>{
         if(err){
           process.nextTick(() => reject(err));
         }
-        process.nextTick(() => resolve(rows));
+        if(rows){
+          let row2 : WorkExecution = {
+            ...rows,
+            working_time : moment(rows.working_time,"HH:mm:ss"),
+            downtime : moment(rows.downtime,"HH:mm:ss")
+          };
+          process.nextTick(() => resolve(row2));
+        }else 
+          process.nextTick(() => resolve(rows));   
       });
       db.close();
     });

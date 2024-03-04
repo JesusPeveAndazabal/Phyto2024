@@ -66,6 +66,10 @@ export class ArduinoService {
   currentTimeImproductive: number = 0;
   data : any = {};
 
+  speedalert: number = 0;
+  caudalNominal: number = 0;
+  pressure: number = 0;
+
 
   inputPressureValue: number | undefined;
   lastVolume: number | null = null;
@@ -76,6 +80,15 @@ export class ArduinoService {
   constructor( private electronService: ElectronService , private databaseService : DatabaseService) {
     this.setupSensorSubjects();
 
+    this.databaseService.getLastWorkExecution().then((workExecution : WorkExecution) => {
+      if(workExecution){
+        //console.log("workExecution",workExecution);
+        this.tiempoProductivo.set_initial(workExecution.working_time.format("HH:mm:ss"));
+        this.tiempoImproductivo.set_initial(workExecution.downtime.format("HH:mm:ss"));
+      }
+
+    });
+    
     for(let i = 1; i <= Configuration.nDevices; i++){
       this.listArduinos.push(
         new ArduinoDevice(Configuration[`device${i}`],115200,true,electronService)
@@ -90,11 +103,17 @@ export class ArduinoService {
       //Agregar sensores para futuros cambios 
       this.data = {
         ...this.data,
+        [Sensor.SPEED]:0,
+        [Sensor.WATER_FLOW]:0,
+        [Sensor.PRESSURE]:0,
+        [Sensor.GPS]:0,
+        [Sensor.VOLUME]:0,
+        [Sensor.PPM]:0,
         [Sensor.PH]:0,
         [Sensor.TEMPERATURE]:0,
         [Sensor.HUMIDITY]:0,
         [Sensor.VOLUME_CONTAINER]:0,
-      }
+      } 
 
       this.listArduinos.forEach( arduino => {
         arduino.message_from_device.forEach((sensor)=>{
@@ -102,10 +121,7 @@ export class ArduinoService {
         this.data = {...this.data,...this.mapToObject(arduino.message_from_device)};
         arduino.message_from_device = new Map<Sensor, number|number[]>();
       });
-
-      this.deactivateLeftValve();
-      this.deactivateRightValve();
-      
+    
       Object.entries(this.data).forEach((value) => {
         let sensor = parseInt(value[0]) as Sensor;
         this.notifySensorValue(sensor,sensor == Sensor.GPS?value[1] as number[]:  value[1] as number);
@@ -119,6 +135,9 @@ export class ArduinoService {
 
         const iteration = async () =>{ 
           let currentWork : WorkExecution = await this.databaseService.getLastWorkExecution();
+          this.speedalert = JSON.parse(currentWork.configuration).speed;
+          this.caudalNominal = JSON.parse(currentWork.configuration).water_flow;7
+          this.pressure = JSON.parse(currentWork.configuration).pressure;
 
           if(currentWork){
             //Evaluar Tiempo Productivo e improductivo
@@ -126,15 +145,20 @@ export class ArduinoService {
               //Contar productivo
               instance.tiempoProductivo.start();
               instance.tiempoImproductivo.stop();
+              //instance.tiempoProductivo.set_initial(currentWork.working_time.format('hh:mm:ss'));
+              
             }
             else{
               //Improductivo
               instance.tiempoImproductivo.start();
               instance.tiempoProductivo.stop();
+              //instance.tiempoProductivo.set_initial(currentWork.downtime.format('hh:mm:ss'));
             }
 
             currentWork.downtime = instance.tiempoImproductivo.time();
             currentWork.working_time = instance.tiempoProductivo.time();
+
+
             //console.log("TIEMPO IMPRODUCTIVO" , currentWork.downtime.format('H:mm:ss'));
             //console.log("TIEMPO PRODUCTIVO" , currentWork.working_time.format('H:mm:ss'));
             //Actualizar el tp e i en la db local
@@ -144,7 +168,6 @@ export class ArduinoService {
           //Actualizar isRunning cada vez que se acabe el volumen de agua o se inicie el trabajo, o se finalice el trabajo.
           if(currentWork && this.isRunning){           
             let gps = this.data[`${Sensor.GPS}`];
-   
             
             delete this.data[`${Sensor.GPS}`];
             delete this.data[`${Sensor.VALVE_LEFT}`]; //Eliminar valvula izquierda
@@ -157,12 +180,15 @@ export class ArduinoService {
 
             this.localConfig = await this.databaseService.getLocalConfig();
            
-            if(this.data[`${Sensor.PRESSURE}`] < this.localConfig.min_pressure || this.data[`${Sensor.PRESSURE}`] > this.localConfig.max_pressure){
+            if(this.data[`${Sensor.SPEED}`] < this.speedalert * 0.5 || this.data[`${Sensor.SPEED}`] > this.speedalert * 1.5){
               has_events = true;
-              events = "LA PRESION ESTA FUERA DEL RANGO ESTABLECIDO";
-            }else if(this.data[`${Sensor.WATER_FLOW}`] < this.localConfig.min_wflow || this.data[`${Sensor.WATER_FLOW}`] > this.localConfig.max_wflow) {
+              events = "LA VELOCIDAD ESTA FUERA DEL RANGO ESTABLECIDO";
+            }else if(this.data[`${Sensor.WATER_FLOW}`] < this.caudalNominal * 0.5|| this.data[`${Sensor.WATER_FLOW}`] > this.caudalNominal * 1.5) {
               has_events = true;
               events = "EL CAUDAL ESTA FUERA DEL RANGO ESTABLECIDO";
+            }else if(this.data[`${Sensor.PRESSURE}`] < this.pressure * 0.5|| this.data[`${Sensor.PRESSURE}`] > this.caudalNominal * 1.5){
+              has_events = true;
+              events = "LA PRESION ESTA FUERA DEL RANGO ESTABLECIDO";
             }
 
             let wExecutionDetail : WorkExecutionDetail =  {

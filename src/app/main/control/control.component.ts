@@ -86,7 +86,6 @@ export class ControlComponent  implements OnInit {
       switchMap(() => this.arduinoService.getSensorObservable(Sensor.WATER_FLOW))
     ).subscribe((valorDelSensor:number) => {
       this.waterFlow = valorDelSensor;
-      console.log("Valor del caudal" , this.waterFlow);
       this.maxVolume = this.arduinoService.initialVolume;
       config.maxVolume = this.arduinoService.initialVolume;
       if(this.arduinoService.isRunning){
@@ -99,7 +98,7 @@ export class ControlComponent  implements OnInit {
             // this.emergencia = false;
           }else {
             this.caudalError = true;
-            // this.emergencia = false;
+            // this.emergencia = false 51 - 89;
           }
         }else{
           this.caudalError = false;
