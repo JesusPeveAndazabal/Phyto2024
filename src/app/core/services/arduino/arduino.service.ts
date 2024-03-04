@@ -66,10 +66,6 @@ export class ArduinoService {
   currentTimeImproductive: number = 0;
   data : any = {};
 
-  speedalert: number = 0;
-  caudalNominal: number = 0;
-  pressure: number = 0;
-
 
   inputPressureValue: number | undefined;
   lastVolume: number | null = null;
@@ -135,9 +131,6 @@ export class ArduinoService {
 
         const iteration = async () =>{ 
           let currentWork : WorkExecution = await this.databaseService.getLastWorkExecution();
-          this.speedalert = JSON.parse(currentWork.configuration).speed;
-          this.caudalNominal = JSON.parse(currentWork.configuration).water_flow;7
-          this.pressure = JSON.parse(currentWork.configuration).pressure;
 
           if(currentWork){
             //Evaluar Tiempo Productivo e improductivo
@@ -180,15 +173,12 @@ export class ArduinoService {
 
             this.localConfig = await this.databaseService.getLocalConfig();
            
-            if(this.data[`${Sensor.SPEED}`] < this.speedalert * 0.5 || this.data[`${Sensor.SPEED}`] > this.speedalert * 1.5){
-              has_events = true;
-              events = "LA VELOCIDAD ESTA FUERA DEL RANGO ESTABLECIDO";
-            }else if(this.data[`${Sensor.WATER_FLOW}`] < this.caudalNominal * 0.5|| this.data[`${Sensor.WATER_FLOW}`] > this.caudalNominal * 1.5) {
-              has_events = true;
-              events = "EL CAUDAL ESTA FUERA DEL RANGO ESTABLECIDO";
-            }else if(this.data[`${Sensor.PRESSURE}`] < this.pressure * 0.5|| this.data[`${Sensor.PRESSURE}`] > this.caudalNominal * 1.5){
+            if(this.data[`${Sensor.PRESSURE}`] < this.localConfig.min_pressure || this.data[`${Sensor.PRESSURE}`] > this.localConfig.max_pressure){
               has_events = true;
               events = "LA PRESION ESTA FUERA DEL RANGO ESTABLECIDO";
+            }else if(this.data[`${Sensor.WATER_FLOW}`] < this.localConfig.min_wflow || this.data[`${Sensor.WATER_FLOW}`] > this.localConfig.max_wflow) {
+              has_events = true;
+              events = "EL CAUDAL ESTA FUERA DEL RANGO ESTABLECIDO";
             }
 
             let wExecutionDetail : WorkExecutionDetail =  {
