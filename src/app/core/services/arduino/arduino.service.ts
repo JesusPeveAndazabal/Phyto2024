@@ -66,6 +66,13 @@ export class ArduinoService {
   currentTimeImproductive: number = 0;
   data : any = {};
 
+  /* vARIABLES PARA LOS EVENTOS */
+  caudalNominal: number = 0;
+  speedalert: number = 0;
+  info: number = 0;
+
+  public dataGps = false; // Variable para verificar si hay datos del GPS
+
 
   inputPressureValue: number | undefined;
   lastVolume: number | null = null;
@@ -93,117 +100,138 @@ export class ArduinoService {
 
     //Iteracion para recorre los valores de los sensores y guardarlos localmente
     let instance = this;
-    setInterval(async ()=>{
+    setInterval(async () => {
       let onExecution = false;
 
-      //Agregar sensores para futuros cambios 
+    
+      // Agregar sensores para futuros cambios
       this.data = {
         ...this.data,
-        [Sensor.SPEED]:0,
-        [Sensor.WATER_FLOW]:0,
-        [Sensor.PRESSURE]:0,
-        [Sensor.GPS]:0,
-        [Sensor.VOLUME]:0,
-        [Sensor.PPM]:0,
-        [Sensor.PH]:0,
-        [Sensor.TEMPERATURE]:0,
-        [Sensor.HUMIDITY]:0,
-        [Sensor.VOLUME_CONTAINER]:0,
-      } 
-
-      this.listArduinos.forEach( arduino => {
-        arduino.message_from_device.forEach((sensor)=>{
+        [Sensor.PPM]: 0,
+        [Sensor.PH]: 0,
+        [Sensor.TEMPERATURE]: 0,
+        [Sensor.HUMIDITY]: 0,
+        [Sensor.VOLUME_CONTAINER]: 0,
+      }
+    
+      this.listArduinos.forEach(arduino => {
+        arduino.message_from_device.forEach((sensor) => {
         });
-        this.data = {...this.data,...this.mapToObject(arduino.message_from_device)};
-        arduino.message_from_device = new Map<Sensor, number|number[]>();
+        this.data = { ...this.data, ...this.mapToObject(arduino.message_from_device) };
+        arduino.message_from_device = new Map<Sensor, number | number[]>();
       });
     
-      Object.entries(this.data).forEach((value) => {
-        let sensor = parseInt(value[0]) as Sensor;
-        this.notifySensorValue(sensor,sensor == Sensor.GPS?value[1] as number[]:  value[1] as number);
-      });
-                
-      if(!onExecution){
-        onExecution = true;
-
-        // Loop que envía los registros por guardar en el servidor vía API/REST
-        // Enviar siempre cada 100ms pero solo guardar cada 1s
-
-        const iteration = async () =>{ 
-          let currentWork : WorkExecution = await this.databaseService.getLastWorkExecution();
-
-          if(currentWork){
-            //Evaluar Tiempo Productivo e improductivo
-            if(this.data[`${Sensor.WATER_FLOW}`] > 1){
-              //Contar productivo
-              instance.tiempoProductivo.start();
-              instance.tiempoImproductivo.stop();
-              //instance.tiempoProductivo.set_initial(currentWork.working_time.format('hh:mm:ss'));
-              
+      // Verificar si hay datos del GPS
+      if (this.data[Sensor.GPS]) {
+        this.dataGps = true;
+        console.log("Si hay datos del gps.");
+      } else {
+        this.dataGps = false;
+        console.log("¡Alerta! No hay datos del GPS." ,this.dataGps);
+        // Aquí puedes agregar cualquier lógica de alerta que necesites
+      }
+    
+      // Continuar solo si hay datos del GPS
+      if (this.dataGps) {
+        Object.entries(this.data).forEach((value) => {
+          let sensor = parseInt(value[0]) as Sensor;
+          this.notifySensorValue(sensor, sensor == Sensor.GPS ? value[1] as number[] : value[1] as number);
+        });
+    
+        if (!onExecution) {
+          onExecution = true;
+    
+          // Loop que envía los registros por guardar en el servidor vía API/REST
+          // Enviar siempre cada 100ms pero solo guardar cada 1s
+    
+          const iteration = async () => {
+            let currentWork: WorkExecution = await this.databaseService.getLastWorkExecution();
+    
+            if (currentWork) {
+              // Evaluar Tiempo Productivo e improductivo
+              if (this.data[`${Sensor.WATER_FLOW}`] > 1) {
+                // Contar productivo
+                instance.tiempoProductivo.start();
+                instance.tiempoImproductivo.stop();
+              } else {
+                // Improductivo
+                instance.tiempoImproductivo.start();
+                instance.tiempoProductivo.stop();
+              }
+    
+              currentWork.downtime = instance.tiempoImproductivo.time();
+              currentWork.working_time = instance.tiempoProductivo.time();
+    
+              // Actualizar el tp e i en la db local
+              await this.databaseService.updateTimeExecution(currentWork);
             }
-            else{
-              //Improductivo
-              instance.tiempoImproductivo.start();
-              instance.tiempoProductivo.stop();
-              //instance.tiempoProductivo.set_initial(currentWork.downtime.format('hh:mm:ss'));
+    
+            // Actualizar isRunning cada vez que se acabe el volumen de agua o se inicie el trabajo, o se finalice el trabajo.
+            if (currentWork && this.isRunning) {
+              let gps = this.data[Sensor.GPS];
+            
+              // Eliminar valvula izquierda, valvula derecha y regulador de presión
+              delete this.data[Sensor.GPS];
+              delete this.data[Sensor.VALVE_LEFT];
+              delete this.data[Sensor.VALVE_RIGHT];
+              delete this.data[Sensor.PRESSURE_REGULATOR];
+            
+              // Evaluar los eventos
+              let events: string[] = [];
+              let has_events = false;
+            
+              this.localConfig = await this.databaseService.getLocalConfig();
+              this.caudalNominal = await JSON.parse(currentWork.configuration).water_flow;
+              this.info = await JSON.parse(currentWork.configuration).pressure;
+              this.speedalert = await JSON.parse(currentWork.configuration).speed;
+            
+              if (this.data[Sensor.WATER_FLOW] < this.caudalNominal * 0.5 || this.data[Sensor.WATER_FLOW] > this.caudalNominal * 1.5) {
+                has_events = true;
+                events.push("EL CAUDAL ESTA FUERA DEL RANGO ESTABLECIDO");
+              }
+            
+              if (this.data[Sensor.PRESSURE] < this.info * 0.5 || this.data[Sensor.PRESSURE] > this.info * 1.5) {
+                has_events = true;
+                events.push("LA PRESIÓN ESTA FUERA DEL RANGO ESTABLECIDO");
+              }
+            
+              if (this.data[Sensor.SPEED] < this.speedalert * 0.5 || this.data[Sensor.SPEED] > this.speedalert * 1.5) {
+                has_events = true;
+                events.push("LA VELOCIDAD ESTA FUERA DEL RANGO ESTABLECIDO");
+              }
+            
+              if (!has_events) {
+                events.push("NO HAY EVENTOS REGISTRADOS");
+              }
+            
+              let wExecutionDetail: WorkExecutionDetail = {
+                id_work_execution: currentWork.id,
+                time: moment(),
+                sended: false,
+                data: JSON.stringify(this.data),
+                gps: JSON.stringify(gps),
+                has_events: has_events,
+                events: events.join(", "), // Concatenar los eventos en una sola cadena
+                id: 0,
+              };
+            
+              // Guardar en la base de datos
+              await this.databaseService.saveWorkExecutionDataDetail(wExecutionDetail);
+            
+              onExecution = false;
             }
-
-            currentWork.downtime = instance.tiempoImproductivo.time();
-            currentWork.working_time = instance.tiempoProductivo.time();
-
-
-            //console.log("TIEMPO IMPRODUCTIVO" , currentWork.downtime.format('H:mm:ss'));
-            //console.log("TIEMPO PRODUCTIVO" , currentWork.working_time.format('H:mm:ss'));
-            //Actualizar el tp e i en la db local
-            await this.databaseService.updateTimeExecution(currentWork);
+            
           }
-
-          //Actualizar isRunning cada vez que se acabe el volumen de agua o se inicie el trabajo, o se finalice el trabajo.
-          if(currentWork && this.isRunning){           
-            let gps = this.data[`${Sensor.GPS}`];
-            
-            delete this.data[`${Sensor.GPS}`];
-            delete this.data[`${Sensor.VALVE_LEFT}`]; //Eliminar valvula izquierda
-            delete this.data[`${Sensor.VALVE_RIGHT}`]; //Eliminar valvula derecha 
-            delete this.data[`${Sensor.PRESSURE_REGULATOR}`]; //Eliminar regulador de presion
-            
-            //Evaluar los eventos
-            let has_events = false;
-            let events = "";
-
-            this.localConfig = await this.databaseService.getLocalConfig();
-           
-            if(this.data[`${Sensor.PRESSURE}`] < this.localConfig.min_pressure || this.data[`${Sensor.PRESSURE}`] > this.localConfig.max_pressure){
-              has_events = true;
-              events = "LA PRESION ESTA FUERA DEL RANGO ESTABLECIDO";
-            }else if(this.data[`${Sensor.WATER_FLOW}`] < this.localConfig.min_wflow || this.data[`${Sensor.WATER_FLOW}`] > this.localConfig.max_wflow) {
-              has_events = true;
-              events = "EL CAUDAL ESTA FUERA DEL RANGO ESTABLECIDO";
-            }
-
-            let wExecutionDetail : WorkExecutionDetail =  {
-              id_work_execution : currentWork.id, //Jalar el id del work execution
-              time              : moment(),
-              sended            : false,
-              data              : JSON.stringify(this.data),
-              gps               : JSON.stringify(gps),
-              has_events        : has_events, //Evaluar eventos
-              events            : events, //Evaluar los eventos
-              id                : 0,
-            }; 
-            //Guardar en la db
-            await this.databaseService.saveWorkExecutionDataDetail(wExecutionDetail);
-          };
-          onExecution = false;
-        }
-
-        let currentTime = moment();
-        if(currentTime.diff(this.now,'seconds') >= 1){
-          await iteration();
-          this.now = currentTime;
+    
+          let currentTime = moment();
+          if (currentTime.diff(this.now, 'seconds') >= 1) {
+            await iteration();
+            this.now = currentTime;
+          }
         }
       }
-    },200); 
+    }, 200);
+    
   }
 
   findBySensor(sensor : number): ArduinoDevice{

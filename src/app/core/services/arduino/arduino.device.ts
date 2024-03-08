@@ -53,13 +53,13 @@ export class ArduinoDevice {
       const handleReconnect = () => {
         if (!this.isReconnecting) {
           this.isReconnecting = true;
-          // console.log('Arduino disconnected. Reconnecting...');
+          console.log('Arduino disconnected. Reconnecting...');
 
           // Intentar reconectar después de un breve período
           setTimeout(() => {
             this.connectToDevice(port, baudrate, autoOpen);
             this.isReconnecting = false;
-            // console.log('Connected to Arduino');
+            console.log('Connected to Arduino');
           }, 7000);
         }
       };

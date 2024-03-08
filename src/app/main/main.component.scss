@@ -1,6 +1,6 @@
 .main-container{
   &::part(background){
-    background-image: url('../../assets/images/fondo5.avif');
+    background-image: url('../../assets/images/fondo6.jpg');
     background-repeat: no-repeat;
     background-size: cover;
     background-position: center center;
@@ -25,6 +25,7 @@ ion-footer::before{
   padding-bottom: 10px !important;
 }
 .left-menu{
+  //background-color: #040403;
   background-color: #040403;
   border-top-right-radius: 40px;
 }
@@ -59,14 +60,32 @@ ion-modal ion-toolbar {
 
 .unselected-fab-button{
   --background : transparent !important;
-  --border-color : var(--ion-color-tertiary, #7c4ecb);
+  --border-color : var(--ion-color-tertiary, #1c22c4);
   --border-width: 2px;
   --border-style: solid;
 }
 
 .selected-fab-button{
-  --background : var(--ion-color-tertiary, #7c4ecb) !important;
-  --border-color : var(--ion-color-tertiary, #7c4ecb);
+  --background : var(--ion-color-tertiary, #4448b9) !important;
+  --border-color : var(--ion-color-tertiary, #4448b9);
+  --border-width: 0px;
+  --border-style: solid;
+}
+
+.gps-button-on{
+  --background : #00c700 !important;
+  --border-width: 0px;
+  --border-style: solid;
+  --color: black;
+
+  &::part(native){
+      --box-shadow: 0px 0px 20px 7px #00c700;
+  }
+}
+
+.gps-button-off{
+  --background : #c52727 !important;
+  //--border-color : red;
   --border-width: 0px;
   --border-style: solid;
 }

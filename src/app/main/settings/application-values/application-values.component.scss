@@ -4,7 +4,7 @@
 
 ion-content::part(scroll) {
   //top: - 70px;
-  top: calc((var(--offset-top) + 20px) * -1);
+  top: calc((var(--offset-top) + 10px) * -1);
 
 }
 
@@ -15,8 +15,8 @@ ion-content::part(scroll) {
 }
 
 
-// @media only screen and (min-width: 768px) and (min-height: 768px):host{
-//   width: 900 !important;
-// }
+/* @media only screen and (min-width: 768px) and (min-height: 768px):host{
+   width: 900 !important;
+} */
 
 

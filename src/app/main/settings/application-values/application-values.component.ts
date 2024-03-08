@@ -74,14 +74,14 @@ export class ApplicationValuesComponent  implements OnInit {
     this.currentWorkExecution = await this.dbService.getLastWorkExecution();
     if(this.currentWorkExecution){
       if(this.currentWorkExecution.configuration != ""){
-        this.weConfiguration = JSON.parse(this.currentWorkExecution.configuration);
+        this.weConfiguration = await JSON.parse(this.currentWorkExecution.configuration);
         this.nozzleConfig = this.weConfiguration!.nozzles;
         this.formData.setValue({
-          volume : this.weConfiguration?.volume,
-          speed : this.weConfiguration?.speed,
-          pressure : this.weConfiguration?.pressure,
-          unit: this.weConfiguration?.unit,
-          width : this.weConfiguration?.width,
+          volume : await this.weConfiguration?.volume,
+          speed : await this.weConfiguration?.speed,
+          pressure : await this.weConfiguration?.pressure,
+          unit: await this.weConfiguration?.unit,
+          width : await this.weConfiguration?.width,
         });
 
         this.changeUnit({value: this.weConfiguration?.unit});
@@ -118,7 +118,7 @@ export class ApplicationValuesComponent  implements OnInit {
   }
 
   async confirm() {
-    console.log("Boton confirmar async");
+    //console.log("Boton confirmar async");
     this.isSubmitted = true;
     if(this.formData.valid){
 
@@ -135,20 +135,21 @@ export class ApplicationValuesComponent  implements OnInit {
       //this.arduinoService.regulatePressureWithBars()
       this.nozzleConfig = this.nozzleConfig.map(p => {return { type : p.type, number : p.number, color : parseInt(p.color.toString()) }});
       this.weConfiguration = {
-        nozzles : this.nozzleConfig,
-        water_flow : this.total,
-        humidity : this.weConfiguration? this.weConfiguration.humidity : 0,
-        temperature : this.weConfiguration? this.weConfiguration.temperature : 0,
-        wind_kmh : this.weConfiguration? this.weConfiguration.wind_kmh : 0,
+        nozzles : await this.nozzleConfig,
+        water_flow : await this.total,
+        humidity : await this.weConfiguration? this.weConfiguration.humidity : 0,
+        temperature : await this.weConfiguration? this.weConfiguration.temperature : 0,
+        wind_kmh : await this.weConfiguration? this.weConfiguration.wind_kmh : 0,
         ...this.formData.value
       }
 
       //console.log("Deberria regular" ,this.weConfiguration?.pressure);
+      //Esto es para mandar el comando de regulacion desde el confirmar del boton 
       this.arduinoService.regulatePressureWithBars(this.weConfiguration?.pressure);
 
       let wExecution : WorkExecution ={
         id : this.currentWorkExecution ? this.currentWorkExecution.id : 0,
-        configuration : JSON.stringify(this.weConfiguration),
+        configuration : await JSON.stringify(this.weConfiguration),
         date : this.currentWorkExecution ? moment(this.currentWorkExecution.date,'YYYY-MM-DD H:mm:ss') : moment(),
         downtime : this.currentWorkExecution ? moment(this.currentWorkExecution.downtime,'H:mm:ss') :moment('0:00:00', 'H:mm:ss'),
         is_finished : 0,
@@ -162,6 +163,7 @@ export class ApplicationValuesComponent  implements OnInit {
         product : this.currentWorkExecution ? this.currentWorkExecution.product : 0,
         work : this.currentWorkExecution ? this.currentWorkExecution.work : 0,
         id_from_server : this.currentWorkExecution ? this.currentWorkExecution.id_from_server : 0,
+        execution_from : this.currentWorkExecution ? this.currentWorkExecution.execution_from : 1,
         sended : this.currentWorkExecution ? this.currentWorkExecution.sended : 0,
         min_volume : 0,
       };

@@ -51,31 +51,32 @@ export class GpsComponent  implements OnInit,AfterViewInit,OnChanges {
     this.loadMarkers();
   }
 
-  loadMarkers(){
-    // console.log("entra a load m☺arker:", config.gps);
-    if(config.gps.length > 1){
-      if(!this.wasCentered && this.map){
-        this.map.setCenter({ lat: config.gps[0][0], lng: config.gps[0][1] });
-        this.wasCentered = true;
-      }
+  loadMarkers() {
+    //verufuca si hay una configuracion definida, si existe config.gps , si es un array y si tiene mas de un elemento
+    if (config && config.gps && Array.isArray(config.gps) && config.gps.length > 1) {
+        if (!this.wasCentered && this.map) {
+            this.map.setCenter({ lat: config.gps[0][0], lng: config.gps[0][1] });
+            this.wasCentered = true;
+        }
 
-      let pathLines = [];
+        let pathLines = [];
 
-      for(let i = 0; i< config.gps.length; i++){
-        pathLines.push({ lat: config.gps[i][0], lng: config.gps[i][1] });
-      }
+        for (let i = 0; i < config.gps.length; i++) {
+            pathLines.push({ lat: config.gps[i][0], lng: config.gps[i][1] });
+        }
 
-      let line = new google.maps.Polyline({
-        path: pathLines,
-        geodesic: true,
-        strokeColor: '#4986E7',
-        strokeOpacity: 1.0,
-        strokeWeight: 3 
-      });
+        let line = new google.maps.Polyline({
+            path: pathLines,
+            geodesic: true,
+            strokeColor: '#4986E7',
+            strokeOpacity: 1.0,
+            strokeWeight: 3
+        });
 
-      line.setMap(this.map);
+        line.setMap(this.map);
     }
   }
+
 
   ngAfterViewInit(){
     if (!navigator.onLine){

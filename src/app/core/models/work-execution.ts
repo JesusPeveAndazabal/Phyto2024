@@ -15,6 +15,7 @@ export interface WorkExecution{
   farm : number;
   sended: number;
   id_from_server:number;
+  execution_from : number;
   min_volume : number;
 }
 

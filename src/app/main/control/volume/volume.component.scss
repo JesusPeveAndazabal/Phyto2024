@@ -116,10 +116,10 @@ text {
 /*  */
 
 @import "bourbon/app/assets/stylesheets/bourbon";
-$button-background-color:       #16638c;
-$button-background-color-hover: #888;
+$button-background-color:       #040403;
+$button-background-color-hover: #000000;
 $button-text-color:             #fff;
-$button-border-color:           #244c69;
+$button-border-color:           #fff;
 $button-border-color-hover:     #000;
 $button-border-width:           4px;
 $button-border-radius:          3px;
@@ -222,6 +222,25 @@ $button-font-size:              40px;
     color: white;
   }
 }
+
+/* Estilos para el botón que controla las dos electroválvulas */
+.dual-control-button {
+  display: block;
+  float: left;
+  background-color: $button-background-color;
+  border: $button-border-width solid $button-border-color;
+  margin: 0 $button-separation/2;
+  padding: 0 $button-horizontal-padding;
+  height: $button-height;
+  width: 100px; /* o ajusta el ancho según sea necesario */
+  line-height: $button-height;
+  border-radius: 50%;
+  color: $button-border-color;
+  outline: none;
+  @include transform (translate3d(0,0,0)); // fix blur on hi-dip displays caused by drop-shadow filter
+  font-size: $button-font-size;
+}
+
 .button-group.chevrons .left{
   &:before {
     transform: skewX($button-chevron-skew-left);

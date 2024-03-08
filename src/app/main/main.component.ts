@@ -22,6 +22,8 @@ import { LocalConf } from '../core/models/local_conf';
 })
 export class MainComponent implements OnInit,AfterViewInit{
   peopleData : Person[] = [];
+  //canStart: boolean = true; // Por ejemplo, si esta propiedad es necesaria para el *ngIf del botón
+  addGpsButtonOnClass: boolean = false;
   @ViewChild('loader') loader!: IonLoading;
   loading_message = 'Verificando configuraciones...';
   lastWorkExecution: WorkExecution | null = null;
@@ -39,6 +41,7 @@ export class MainComponent implements OnInit,AfterViewInit{
 
   workStatus : WorkStatusChange = WorkStatusChange.STOP;
   classButtonPower = "power-button-off";
+  classButtonGps = "classButtonGps";
   islocalServerConnected : boolean = false; //Status of websocket connection (local server)
   finished : number  = 0;
   alertInputs : any = [
@@ -71,6 +74,7 @@ export class MainComponent implements OnInit,AfterViewInit{
 
     this.login = await this.databaseService.getLogin();
     this.lastWorkExecution = await this.databaseService.getLastWorkExecution();
+
     if(this.lastWorkExecution) {
       this.finished = this.lastWorkExecution.id;
       //Obtener las coordenadas del trabajo lastWorkExecution JSON.parse()
@@ -79,6 +83,7 @@ export class MainComponent implements OnInit,AfterViewInit{
         config.gps.push(JSON.parse(wDetail.gps));
       });
     }
+
     config.lastWorkExecution = this.lastWorkExecution;
     this.localConfig = await this.databaseService.getLocalConfig();
 
@@ -179,24 +184,24 @@ export class MainComponent implements OnInit,AfterViewInit{
     // console.log(this.loadPersonValues, "person values");
     if(!this.lastWorkExecution)
       this.loadPersonValues();
-    let command : SocketData = {
-      event:SocketEvent.WORK_STATUS_CHANGES,
-      type: WorkStatusChange.STOP,
-      data : {id : this.lastWorkExecution!.id}
-    };
-    command.data.id = (await this.databaseService.getLastWorkExecution()).id;
-    console.log(command, "array de socket data");
-    console.log(command.data.id, "id");
+      let command : SocketData = {
+        event:SocketEvent.WORK_STATUS_CHANGES,
+        type: WorkStatusChange.STOP,
+        data : {id : this.lastWorkExecution!.id}
+      };
+      command.data.id = (await this.databaseService.getLastWorkExecution()).id;
+      console.log(command, "array de socket data");
+      console.log(command.data.id, "id");
 
-    // Start/Pause
-    command.type = this.workStatus == WorkStatusChange.STOP || WorkStatusChange.FINISH ? WorkStatusChange.START : WorkStatusChange.STOP;
-    console.log(command.type, "command type");
+      // Start/Pause
+      command.type = this.workStatus == WorkStatusChange.STOP || WorkStatusChange.FINISH ? WorkStatusChange.START : WorkStatusChange.STOP;
+      console.log(command.type, "command type");
 
     /*In this case the pause option will not be enabled, it will pause only when the volume of water in the tank is close to empty,
     then it will be the moment when the operator finishes the work application or fills the tank again, if so, once the tank is filled,
     the new volume of water in the tank must be entered.*/
 
-    if (command.type == WorkStatusChange.START){
+    if (command.type == WorkStatusChange.START && this.arduinoService.dataGps){
       this.alertController.create({
         header: 'Iniciar/Reiniciar aplicaciòn de trabajo',
         subHeader: 'Volumen de aplicaciòn',
@@ -262,6 +267,8 @@ export class MainComponent implements OnInit,AfterViewInit{
       .then((res) => {
         res.present();
       });
+    }else if(this.arduinoService.dataGps = false){
+      this.alerta.mostrarAlertaChica("<p>No hay datos del gps.</p>");
     }
   }
 

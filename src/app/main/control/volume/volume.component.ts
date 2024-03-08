@@ -34,6 +34,7 @@ export class VolumeComponent  implements OnInit,OnChanges {
 
   public derechaActiva: boolean = false;
   public izquierdaActiva: boolean = false;
+  public bothControlsActive: boolean = false;
   private container! : Wave;
   public shouldBlink: boolean = false;
   localConfig! : LocalConf;
@@ -155,6 +156,24 @@ export class VolumeComponent  implements OnInit,OnChanges {
     }
   }
 
+  toggleAmbasValvulas() {
+    // Alternar el estado de ambas válvulas
+    this.bothControlsActive = !this.bothControlsActive;
+  
+    // Activa o desactiva las dos válvulas según el estado de ambos controles
+    if (this.bothControlsActive) {
+      this.leftControlActive = true;
+      this.rightControlActive = true;
+      this.arduinoService.activateLeftValve();
+      this.arduinoService.activateRightValve();
+    } else {
+      this.leftControlActive = false;
+      this.rightControlActive = false;
+      this.arduinoService.deactivateLeftValve();
+      this.arduinoService.deactivateRightValve();
+    }
+  }
+  
 
   map(value : number, fromLow : number, fromHigh : number, toLow : number, toHigh : number) {
     return (value - fromLow) * (toHigh - toLow) / (fromHigh - fromLow) + toLow;

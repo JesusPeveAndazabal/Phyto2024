@@ -34,7 +34,7 @@ export class ConfigComponent implements OnInit {
 
     this.formData = this.fb.group({
       // ws_server: ['',[Validators.required,Validators.pattern('(?:(?:(?:ht|f)tp)s?://)|(ws?s)?[\\w_-]+(?:\\.[\\w_-]+)+([\\w.,@?^=%&:/~+#-]*[\\w@?^=%&/~+#-])?')]],
-      api_server: 'https://ps-test.fitosatbeta.com',
+      api_server: 'http://192.168.139.209:8000',
       vol_alert_on: [0,[Validators.required,Validators.min(1)]],
       min_wflow: [0,[Validators.required,Validators.min(1)]],
       max_wflow: [0,[Validators.required,Validators.min(1)]],
@@ -70,13 +70,13 @@ export class ConfigComponent implements OnInit {
     //console.log("el botón 'Validar y Guardar' fue presionado",this.formData, "config.component.ts 1");
     // alert("info correcta");
     if(this.formData.valid){
-      console.log("condicion1");
+      //console.log("condicion1");
       environment.apiURL = this.formData.value.api_server;
       environment.minVolume = this.formData.value.vol_alert_on;
 
       // VALIDACION DE API
       let validAPI = await this.syncPrimaryTables();
-      console.log("ValidaApi" , validAPI);
+      //console.log("ValidaApi" , validAPI);
       //console.log(validAPI, "validacion de api");
       if(!validAPI){
         this.alerta.mostrarAlertaChica("<p>No se pudo validar URL del servidor API.</p>");

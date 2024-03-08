@@ -230,6 +230,18 @@ export class ControlComponent  implements OnInit {
     }
   }
 
+  toggletwoValvulas():void{
+    this.rightControlActive = !this.rightControlActive;
+    this.leftControlActive = !this.leftControlActive;
+    if(this.rightControlActive && this.leftControlActive){
+      this.arduinoService.activateRightValve();
+      this.arduinoService.activateLeftValve();
+    }else{
+      this.arduinoService.deactivateLeftValve();
+      this.arduinoService.deactivateRightValve();
+    }
+  }
+
   //Activar y desactivar la válvulas izquierda
   toggleValvulaIzquierda():void{
     this.leftControlActive = !this.leftControlActive;

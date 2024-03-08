@@ -11,6 +11,7 @@ import { ApiService } from './core/services/api/api.service';
 import { WorkExecution, WorkExecutionDetail } from './core/models/work-execution';
 import { ArduinoDevice } from './core/services/arduino/arduino.device';
 import { ArduinoService } from './core/services/arduino/arduino.service';
+import { ipcRenderer } from 'electron';
 
 @Component({
   selector: 'app-root',
@@ -66,7 +67,6 @@ export class AppComponent implements OnInit {
 
   ngOnInit(): void {
     //console.log("App initialization", "app.component.ts");
-    
       let records = [];
       let records1 = [];
       let sended = [];
@@ -83,7 +83,17 @@ export class AppComponent implements OnInit {
                 try{
                   let response : WorkExecution = wExecution;
                   if(!wExecution.id_from_server){
-                    wExecution.configuration = JSON.parse(wExecution.configuration);
+                    try {
+                      if (wExecution.configuration.trim() !== '') {
+                          wExecution.configuration = await JSON.parse(wExecution.configuration);
+                          console.log("La cadena esta llena");
+                      } else {
+                          console.log("La cadena JSON está vacía");
+                      }
+                      // Resto del código
+                    } catch (error) {
+                        console.log("Error al analizar JSON:", error);
+                    }
                     response = await firstValueFrom(this.apiService.sendRegistroAsyncExecution(wExecution));
                     if(response.id){
                       wExecution.id_from_server = response.id;
@@ -115,9 +125,11 @@ export class AppComponent implements OnInit {
                             wDetail.data = JSON.parse(wDetail.data);
                             wDetail.gps = JSON.parse(wDetail.gps);
                             wDetail.gps = [wDetail.gps[1],wDetail.gps[0]];
-                            wDetail.work_execution = wExecution.id_from_server;                        
+                            wDetail.work_execution = wExecution.id_from_server;  
+                            console.log("Detalle gps" , wDetail.gps);                      
                           });
 
+                          
                           let response = await firstValueFrom(this.apiService.sendRegistroAsyncExecutionDetail(paquete));
                                        
                           //Se asume que está guardando correctamente
@@ -128,10 +140,7 @@ export class AppComponent implements OnInit {
                         }catch(exception){
                           console.log(exception);
                         }
-                      }
-                      
-
-                      
+                      }      
                     }
                   }
                 }catch(exception){

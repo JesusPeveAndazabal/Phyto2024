@@ -79,7 +79,7 @@ export class ApplicationDataComponent  implements OnInit {
   }
 
   farmSelected($event : any){
-    console.log($event);
+    //.log($event);
     this.fLots = this.lots.filter(p => p.farm === parseInt($event.detail.value));
     this.formData.controls['lot'].setValue(undefined);
   }
@@ -93,7 +93,7 @@ export class ApplicationDataComponent  implements OnInit {
   }
 
   async confirm() {
-    console.log("Boton confirmar");
+    //console.log("Boton confirmar");
     this.isSubmitted = true;
     if(this.formData.valid){
       let wExecution : WorkExecution ={

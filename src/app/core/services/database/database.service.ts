@@ -102,7 +102,8 @@ export class DatabaseService extends ElectronService {
                 + "	product INTEGER, \n"
                 + "	is_finished INTEGER, \n"
                 + " id_from_server INTEGER, \n"
-                + "	sended INTEGER \n"
+                + "	sended INTEGER, \n"
+                + " execution_from INTEGER \n"
                 + "	); \n"
 
                 + " CREATE TABLE IF NOT EXISTS work_execution_details( \n"
@@ -607,7 +608,7 @@ export class DatabaseService extends ElectronService {
     return new Promise<boolean>((resolve, reject) => {
       let db = new this.sqlite.Database(this.file);
       let insertSql =
-        "INSERT INTO work_execution (work,lot,worker,supervisor,date,configuration,working_time,downtime,hectare,cultivation,product,is_finished,id_from_server,sended) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?);";
+        "INSERT INTO work_execution (work,lot,worker,supervisor,date,configuration,working_time,downtime,hectare,cultivation,product,is_finished,id_from_server,sended,execution_from) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);";
 
       // Ejecutar la inserción en la tabla 'work_execution'
       db.run(
@@ -627,13 +628,14 @@ export class DatabaseService extends ElectronService {
           o.is_finished,
           o.id_from_server,
           0,
+          1,
         ],
         (err: Error | null) => {
           if (err) {
             console.error("SQLITE INSERT error", err);
             reject(err);
           } else {
-            console.log("Inserción exitosa");
+            //console.log("Inserción exitosa");
             resolve(true);
           }
 
@@ -732,7 +734,7 @@ export class DatabaseService extends ElectronService {
             console.error("SQLITE UPDATE error", updateErr);
             reject(updateErr);
           } else {
-            console.log("Inserción y actualización exitosas");
+            //console.log("Inserción y actualización exitosas");
             resolve(true);
           }
 
@@ -761,12 +763,12 @@ export class DatabaseService extends ElectronService {
         "UPDATE work_execution SET work = ?, supervisor = ?, lot = ?, worker = ?, configuration = ?, hectare = ?, cultivation = ?, product = ? , id_from_server = ?  WHERE id = ?;";
 
       // Ejecutar la actualización en la tabla 'work_execution'
-      db.run(sql, [o.work, o.supervisor, o.lot, o.worker, o.configuration, o.hectare, o.cultivation, o.product, o.id_from_server , o.id], (err: Error | null) => {
+      db.run(sql, [o.work, o.supervisor, o.lot, o.worker, o.configuration, o.hectare, o.cultivation, o.product, o.id_from_server , o.id ], (err: Error | null) => {
         if (err) {
           console.error("SQLITE UPDATE error", err);
           reject(err);
         } else {
-          console.log("Actualización exitosa");
+          //console.log("Actualización exitosa");
           resolve(true);
         }
 
@@ -872,7 +874,7 @@ export class DatabaseService extends ElectronService {
           console.error("SQLITE UPDATE error", err);
           reject(err);
         } else {
-          console.log("Actualización exitosa");
+          //console.log("Actualización exitosa");
           resolve(true);
         }
 
@@ -903,7 +905,7 @@ export class DatabaseService extends ElectronService {
           console.error("SQLITE UPDATE error", err);
           reject(err);
         } else {
-          console.log("Actualización exitosa");
+          //console.log("Actualización exitosa");
           resolve(true);
         }
 
@@ -1207,7 +1209,7 @@ export class DatabaseService extends ElectronService {
     });
   }
 
-  async getLogin(): Promise<Login> {
+  getLogin(): Promise<Login> {
     return new Promise<Login>((resolve, reject) => {
       let db = new this.sqlite.Database(this.file);
       let sql = "SELECT operador,p1.id as 'id_op', p1.code as 'code_op', p1.fullname as 'fullname_op', p1.document as 'document_op', p1.type as 'type_op', p1.is_deleted as 'isdeleted_op', supervisor, person.id as 'id_sup', person.code as 'code_sup', person.fullname as 'fullname_sup', person.document as 'document_sup', person.type as 'type_sup', person.is_deleted as 'isdeleted_sup', fechahora FROM login INNER JOIN person p1 ON login.operador = p1.id INNER JOIN person ON login.supervisor=person.id ORDER BY fechahora DESC LIMIT 1 ;";
@@ -1273,7 +1275,7 @@ export class DatabaseService extends ElectronService {
             console.error("SQLITE INSERT error", err);
             reject(err);
           } else {
-            console.log("Inserción exitosa");
+            //console.log("Inserción exitosa");
             resolve(true);
           }
 
@@ -1300,7 +1302,7 @@ export class DatabaseService extends ElectronService {
           console.error("SQLITE UPDATE error", err);
           reject(err);
         } else {
-          console.log("Actualización exitosa");
+          //console.log("Actualización exitosa");
           resolve(true);
         }
 
