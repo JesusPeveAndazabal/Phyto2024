@@ -34,7 +34,7 @@ export class ConfigComponent implements OnInit {
 
     this.formData = this.fb.group({
       // ws_server: ['',[Validators.required,Validators.pattern('(?:(?:(?:ht|f)tp)s?://)|(ws?s)?[\\w_-]+(?:\\.[\\w_-]+)+([\\w.,@?^=%&:/~+#-]*[\\w@?^=%&/~+#-])?')]],
-      api_server: 'http://192.168.139.209:8000',
+      api_server: 'http://192.168.242.209:8000',
       vol_alert_on: [0,[Validators.required,Validators.min(1)]],
       min_wflow: [0,[Validators.required,Validators.min(1)]],
       max_wflow: [0,[Validators.required,Validators.min(1)]],
