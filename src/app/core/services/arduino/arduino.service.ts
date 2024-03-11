@@ -70,6 +70,7 @@ export class ArduinoService {
   caudalNominal: number = 0;
   speedalert: number = 0;
   info: number = 0;
+  tiempocondicion = 0;
 
   public dataGps = false; // Variable para verificar si hay datos del GPS
 
@@ -89,7 +90,6 @@ export class ArduinoService {
         this.tiempoProductivo.set_initial(workExecution.working_time.format("HH:mm:ss"));
         this.tiempoImproductivo.set_initial(workExecution.downtime.format("HH:mm:ss"));
       }
-
     });
     
     for(let i = 1; i <= Configuration.nDevices; i++){
@@ -125,14 +125,13 @@ export class ArduinoService {
       if (this.data[Sensor.GPS]) {
         this.dataGps = true;
         console.log("Si hay datos del gps.");
-      } else {
+      }else {
         this.dataGps = false;
         console.log("¡Alerta! No hay datos del GPS." ,this.dataGps);
         // Aquí puedes agregar cualquier lógica de alerta que necesites
       }
     
       // Continuar solo si hay datos del GPS
-      if (this.dataGps) {
         Object.entries(this.data).forEach((value) => {
           let sensor = parseInt(value[0]) as Sensor;
           this.notifySensorValue(sensor, sensor == Sensor.GPS ? value[1] as number[] : value[1] as number);
@@ -140,7 +139,13 @@ export class ArduinoService {
     
         if (!onExecution) {
           onExecution = true;
-    
+
+           if (this.data[`${Sensor.WATER_FLOW}`] > 1) {
+            this.tiempocondicion = 1;
+          }else{
+            this.tiempocondicion = 4;
+          }
+
           // Loop que envía los registros por guardar en el servidor vía API/REST
           // Enviar siempre cada 100ms pero solo guardar cada 1s
     
@@ -150,11 +155,13 @@ export class ArduinoService {
             if (currentWork) {
               // Evaluar Tiempo Productivo e improductivo
               if (this.data[`${Sensor.WATER_FLOW}`] > 1) {
+                //this.tiempocondicion = 1;
                 // Contar productivo
                 instance.tiempoProductivo.start();
                 instance.tiempoImproductivo.stop();
               } else {
                 // Improductivo
+                //this.tiempocondicion = 4;
                 instance.tiempoImproductivo.start();
                 instance.tiempoProductivo.stop();
               }
@@ -214,9 +221,11 @@ export class ArduinoService {
                 events: events.join(", "), // Concatenar los eventos en una sola cadena
                 id: 0,
               };
-            
-              // Guardar en la base de datos
+
               await this.databaseService.saveWorkExecutionDataDetail(wExecutionDetail);
+
+            // Guardar en la base de datos
+              
             
               onExecution = false;
             }
@@ -224,14 +233,13 @@ export class ArduinoService {
           }
     
           let currentTime = moment();
-          if (currentTime.diff(this.now, 'seconds') >= 1) {
+          if (currentTime.diff(this.now, 'seconds') >= this.tiempocondicion) {
             await iteration();
             this.now = currentTime;
           }
         }
-      }
+      
     }, 200);
-    
   }
 
   findBySensor(sensor : number): ArduinoDevice{

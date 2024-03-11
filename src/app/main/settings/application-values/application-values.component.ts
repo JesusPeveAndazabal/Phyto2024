@@ -54,7 +54,6 @@ export class ApplicationValuesComponent  implements OnInit {
     }
 
   async ngOnInit() {
-
     await this.dbService.openConnection();
     this.nozzleColors = await this.dbService.getNozzleColorData();
     this.nozzleTypes = await this.dbService.getNozzleTypeData();
@@ -145,7 +144,7 @@ export class ApplicationValuesComponent  implements OnInit {
 
       //console.log("Deberria regular" ,this.weConfiguration?.pressure);
       //Esto es para mandar el comando de regulacion desde el confirmar del boton 
-      this.arduinoService.regulatePressureWithBars(this.weConfiguration?.pressure);
+      //this.arduinoService.regulatePressureWithBars(this.weConfiguration?.pressure);
 
       let wExecution : WorkExecution ={
         id : this.currentWorkExecution ? this.currentWorkExecution.id : 0,

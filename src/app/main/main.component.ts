@@ -201,7 +201,7 @@ export class MainComponent implements OnInit,AfterViewInit{
     then it will be the moment when the operator finishes the work application or fills the tank again, if so, once the tank is filled,
     the new volume of water in the tank must be entered.*/
 
-    if (command.type == WorkStatusChange.START && this.arduinoService.dataGps){
+    if (command.type == WorkStatusChange.START){
       this.alertController.create({
         header: 'Iniciar/Reiniciar aplicaciòn de trabajo',
         subHeader: 'Volumen de aplicaciòn',
@@ -267,8 +267,6 @@ export class MainComponent implements OnInit,AfterViewInit{
       .then((res) => {
         res.present();
       });
-    }else if(this.arduinoService.dataGps = false){
-      this.alerta.mostrarAlertaChica("<p>No hay datos del gps.</p>");
     }
   }
 
