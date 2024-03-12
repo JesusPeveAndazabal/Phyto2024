@@ -144,7 +144,8 @@ export class ApplicationValuesComponent  implements OnInit {
 
       //console.log("Deberria regular" ,this.weConfiguration?.pressure);
       //Esto es para mandar el comando de regulacion desde el confirmar del boton 
-      //this.arduinoService.regulatePressureWithBars(this.weConfiguration?.pressure);
+      this.arduinoService.regulatePressureWithBars(this.weConfiguration?.pressure);
+      console.log(this.weConfiguration?.pressure);
 
       let wExecution : WorkExecution ={
         id : this.currentWorkExecution ? this.currentWorkExecution.id : 0,

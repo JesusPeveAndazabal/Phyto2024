@@ -1209,7 +1209,7 @@ export class DatabaseService extends ElectronService {
     });
   }
 
-  getLogin(): Promise<Login> {
+  async getLogin(): Promise<Login> {
     return new Promise<Login>((resolve, reject) => {
       let db = new this.sqlite.Database(this.file);
       let sql = "SELECT operador,p1.id as 'id_op', p1.code as 'code_op', p1.fullname as 'fullname_op', p1.document as 'document_op', p1.type as 'type_op', p1.is_deleted as 'isdeleted_op', supervisor, person.id as 'id_sup', person.code as 'code_sup', person.fullname as 'fullname_sup', person.document as 'document_sup', person.type as 'type_sup', person.is_deleted as 'isdeleted_sup', fechahora FROM login INNER JOIN person p1 ON login.operador = p1.id INNER JOIN person ON login.supervisor=person.id ORDER BY fechahora DESC LIMIT 1 ;";

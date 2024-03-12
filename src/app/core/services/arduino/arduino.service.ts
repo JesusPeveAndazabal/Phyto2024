@@ -66,14 +66,18 @@ export class ArduinoService {
   currentTimeImproductive: number = 0;
   data : any = {};
 
+  volumenDescontado = 0;
+  volumenInicial = 100;
+
   /* vARIABLES PARA LOS EVENTOS */
   caudalNominal: number = 0;
   speedalert: number = 0;
   info: number = 0;
   tiempocondicion = 0;
 
+  volumenAcumul = 0;
+  ultimoTiempoNotificacion: number = 0;
   public dataGps = false; // Variable para verificar si hay datos del GPS
-
 
   inputPressureValue: number | undefined;
   lastVolume: number | null = null;
@@ -253,13 +257,16 @@ export class ArduinoService {
     this.isRunning = true;
   }
 
-  public  mapToObject(map: Map<any, any>): { [key: string]: any } {
-    const obj: { [key: string]: any } = {};
-    map.forEach((value, key) => {
-      obj[key.toString()] = value;
-    });
-    return obj;
-  }
+
+    public mapToObject(map: Map<any, any>): { [key: string]: any } {
+      const obj: { [key: string]: any } = {};
+      map.forEach((value, key) => {
+        if (key !== undefined) {
+          obj[key.toString()] = value;
+        }
+      });
+      return obj;
+    }
 
     //Metodo para enviar el valor de presion que se le asignara
     public regulatePressureWithBars(bars: number): void {
@@ -375,20 +382,21 @@ export class ArduinoService {
 
   //Notifica si cambio el valor de los sensores
   public notifySensorValue(sensorType: Sensor, value: number|number[]): void {
+    const tiempoActual = Date.now();
     //console.log(`Nuevo valor para ${sensorType}: ${value}`)
     if (this.sensorSubjectMap.has(sensorType)) {
-      this.sensorSubjectMap.get(sensorType)!.next(value);
-      let volumenInicial = this.initialVolume;
-      if (sensorType === Sensor.VOLUME) {
-        if (this.currentRealVolume > this.minVolume && this.isRunning) {
-          //this.currentRealVolume -= value as number;
-          let valor = value as number;
-          this.currentRealVolume = volumenInicial - valor;
-          //console.log("Real Volume", this.currentRealVolume);
+        this.sensorSubjectMap.get(sensorType)!.next(value);
+        if (sensorType === Sensor.VOLUME  && tiempoActual - this.ultimoTiempoNotificacion >= 1000 ) {
+            this.ultimoTiempoNotificacion = tiempoActual;
+            let volumenInicial = this.initialVolume;
+            // Resta la diferencia del valor anteriormente descontado
+            let valor = value as number;
+            this.volumenAcumul = valor + this.volumenAcumul;
+            this.currentRealVolume = volumenInicial - this.volumenAcumul;
         }
-      }
     }
   }
+
 
   //Notifica eventos del sensor de watterflow
  /*  public notifySensorWatterflow(sensor: Sensor, val: number) {

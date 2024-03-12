@@ -43,6 +43,7 @@ export class VolumeComponent  implements OnInit,OnChanges {
   percentVolume = 0;
   derecha: boolean = false;
   izquierda: boolean = false;
+  //volumenInicial = 200; // Define tu volumen inicial aquí
   constructor(public arduinoService :ArduinoService, private dbService: DatabaseService,private changeDetectorRef: ChangeDetectorRef) {
 
    }
@@ -64,23 +65,28 @@ export class VolumeComponent  implements OnInit,OnChanges {
     this.minVolume = this.localConfig.vol_alert_on;
     const intervalObservable = interval(1000); // Puedes ajustar el intervalo según sea necesario
 
-    // Combina el observable del intervalo con tu observable de sensor
-    intervalObservable.pipe(
-      startWith(0), // Emite un valor inicial para que comience inmediatamente
-      switchMap(() => this.arduinoService.getSensorObservable(Sensor.VOLUME))
-    ).subscribe((valorDelSensor:number) => {
-      this.volume = parseFloat(this.arduinoService.currentRealVolume.toFixed(2));
 
 
-      if (this.arduinoService.currentRealVolume < this.minVolume && this.arduinoService.isRunning) {
-        //this.shouldBlink = true;
-        this.apagarValvulas();
-        this.arduinoService.isRunning = false;
-      } else {
-        this.shouldBlink = false;
-      }
-    });
-    
+    // Suponiendo que tienes una variable volumenInicial definida en tu clase
+
+  interval(1000).pipe(
+    startWith(0), // Emite un valor inicial para que comience inmediatamente
+    switchMap(() => this.arduinoService.getSensorObservable(Sensor.VOLUME))
+  ).subscribe((valorDelSensor: number) => {
+
+    // Actualiza el volumen actual en tu clase
+    this.volume = this.arduinoService.currentRealVolume;
+    //console.log("THIS.VOLUME", this.volume);
+
+    if (this.volume < this.minVolume && this.arduinoService.isRunning) {
+      //this.shouldBlink = true;
+      this.apagarValvulas();
+      this.arduinoService.isRunning = false;
+    } else {
+      this.shouldBlink = false;
+    }
+  });
+
     this.container = new Wave({
       unit: 10, // wave size
       info: {
