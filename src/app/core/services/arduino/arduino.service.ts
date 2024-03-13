@@ -74,6 +74,7 @@ export class ArduinoService {
   speedalert: number = 0;
   info: number = 0;
   tiempocondicion = 0;
+  accumulated_volume = 0;
 
   volumenAcumul = 0;
   ultimoTiempoNotificacion: number = 0;
@@ -116,7 +117,9 @@ export class ArduinoService {
         [Sensor.TEMPERATURE]: 0,
         [Sensor.HUMIDITY]: 0,
         [Sensor.VOLUME_CONTAINER]: 0,
-        [Sensor.DISTANCE_NEXT_TRAM]: null,
+        [Sensor.DISTANCE_NEXT_SECTION]: 0,
+        [Sensor.ACCUMULATED_VOLUME] : parseFloat(this.accumulated_volume.toFixed(2)),
+        [Sensor.ACCUMULATED_HECTARE] : 0,
       }
     
       this.listArduinos.forEach(arduino => {
@@ -134,7 +137,7 @@ export class ArduinoService {
         this.dataGps = false;
         console.log("¡Alerta! No hay datos del GPS." ,this.dataGps);
         // Aquí puedes agregar cualquier lógica de alerta que necesites
-      }
+      } 
     
       // Continuar solo si hay datos del GPS
         Object.entries(this.data).forEach((value) => {
@@ -153,9 +156,15 @@ export class ArduinoService {
 
           // Loop que envía los registros por guardar en el servidor vía API/REST
           // Enviar siempre cada 100ms pero solo guardar cada 1s
-    
+        
+
           const iteration = async () => {
             let currentWork: WorkExecution = await this.databaseService.getLastWorkExecution();
+            if(Sensor.VOLUME){
+              this.accumulated_volume += this.data[`${Sensor.VOLUME}`];
+              console.log("VOLUMEN ACUMULADO" , this.data[`${Sensor.ACCUMULATED_VOLUME}`]);
+              console.log("VOLUMEN ACUMULADO" , this.accumulated_volume);
+            }
     
             if (currentWork) {
               // Evaluar Tiempo Productivo e improductivo
@@ -181,7 +190,8 @@ export class ArduinoService {
             // Actualizar isRunning cada vez que se acabe el volumen de agua o se inicie el trabajo, o se finalice el trabajo.
             if (currentWork && this.isRunning) {
               let gps = this.data[Sensor.GPS];
-            
+              
+
               // Eliminar valvula izquierda, valvula derecha y regulador de presión
               delete this.data[Sensor.GPS];
               delete this.data[Sensor.VALVE_LEFT];
