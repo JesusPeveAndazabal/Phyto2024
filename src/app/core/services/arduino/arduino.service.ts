@@ -116,6 +116,7 @@ export class ArduinoService {
         [Sensor.TEMPERATURE]: 0,
         [Sensor.HUMIDITY]: 0,
         [Sensor.VOLUME_CONTAINER]: 0,
+        [Sensor.DISTANCE_NEXT_TRAM]: null,
       }
     
       this.listArduinos.forEach(arduino => {

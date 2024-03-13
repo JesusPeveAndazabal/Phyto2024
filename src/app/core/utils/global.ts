@@ -27,6 +27,7 @@ export enum Sensor{
     TEMPERATURE = 8,
     HUMIDITY = 9,
     VOLUME_CONTAINER = 10,
+    DISTANCE_NEXT_TRAM = 11,
 
     VALVE_LEFT = 20,
     VALVE_RIGHT = 21,
