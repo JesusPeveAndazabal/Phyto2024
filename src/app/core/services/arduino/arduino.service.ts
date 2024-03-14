@@ -75,6 +75,7 @@ export class ArduinoService {
   info: number = 0;
   tiempocondicion = 0;
   accumulated_volume = 0;
+  accumulated_distance = 0;
 
   volumenAcumul = 0;
   ultimoTiempoNotificacion: number = 0;
@@ -119,7 +120,7 @@ export class ArduinoService {
         [Sensor.VOLUME_CONTAINER]: 0,
         [Sensor.DISTANCE_NEXT_SECTION]: 0,
         [Sensor.ACCUMULATED_VOLUME] : parseFloat(this.accumulated_volume.toFixed(2)),
-        [Sensor.ACCUMULATED_HECTARE] : 0,
+        [Sensor.ACCUMULATED_HECTARE] : this.accumulated_distance,
       }
     
       this.listArduinos.forEach(arduino => {
@@ -150,6 +151,9 @@ export class ArduinoService {
 
            if (this.data[`${Sensor.WATER_FLOW}`] > 1) {
             this.tiempocondicion = 1;
+            //this.data[Sensor.SPEED] = 7.4;
+            this.data[Sensor.DISTANCE_NEXT_SECTION] = this.data[Sensor.SPEED] / 3.6;
+            console.log("CALCULO DISTANCIA", this.data[Sensor.DISTANCE_NEXT_SECTION]);
           }else{
             this.tiempocondicion = 4;
           }
@@ -162,6 +166,8 @@ export class ArduinoService {
             let currentWork: WorkExecution = await this.databaseService.getLastWorkExecution();
             if(Sensor.VOLUME){
               this.accumulated_volume += this.data[`${Sensor.VOLUME}`];
+              this.accumulated_distance += this.data[`${Sensor.DISTANCE_NEXT_SECTION}`];
+              //console.log("acumulado de distancia" , this.accumulated_distance);
               //console.log("VOLUMEN ACUMULADO" , this.data[`${Sensor.ACCUMULATED_VOLUME}`]);
               //console.log("VOLUMEN ACUMULADO" , this.accumulated_volume);
             }
@@ -190,6 +196,8 @@ export class ArduinoService {
             // Actualizar isRunning cada vez que se acabe el volumen de agua o se inicie el trabajo, o se finalice el trabajo.
             if (currentWork && this.isRunning) {
               let gps = this.data[Sensor.GPS];
+
+             
               
 
               // Eliminar valvula izquierda, valvula derecha y regulador de presión
