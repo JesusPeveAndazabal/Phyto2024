@@ -162,8 +162,8 @@ export class ArduinoService {
             let currentWork: WorkExecution = await this.databaseService.getLastWorkExecution();
             if(Sensor.VOLUME){
               this.accumulated_volume += this.data[`${Sensor.VOLUME}`];
-              console.log("VOLUMEN ACUMULADO" , this.data[`${Sensor.ACCUMULATED_VOLUME}`]);
-              console.log("VOLUMEN ACUMULADO" , this.accumulated_volume);
+              //console.log("VOLUMEN ACUMULADO" , this.data[`${Sensor.ACCUMULATED_VOLUME}`]);
+              //console.log("VOLUMEN ACUMULADO" , this.accumulated_volume);
             }
     
             if (currentWork) {
@@ -197,6 +197,8 @@ export class ArduinoService {
               delete this.data[Sensor.VALVE_LEFT];
               delete this.data[Sensor.VALVE_RIGHT];
               delete this.data[Sensor.PRESSURE_REGULATOR];
+
+              console.log("Impresion de data" , JSON.stringify(this.data));
             
               // Evaluar los eventos
               let events: string[] = [];
@@ -237,8 +239,12 @@ export class ArduinoService {
                 id: 0,
               };
 
-              await this.databaseService.saveWorkExecutionDataDetail(wExecutionDetail);
-
+              if(this.dataGps && delete this.data[Sensor.GPS] &&  delete this.data[Sensor.VALVE_LEFT] && delete this.data[Sensor.VALVE_RIGHT] &&  delete this.data[Sensor.PRESSURE_REGULATOR]){
+                await this.databaseService.saveWorkExecutionDataDetail(wExecutionDetail);
+              }else{
+                console.log("No se guardo en la DB");
+              }
+            
             // Guardar en la base de datos
               
             
