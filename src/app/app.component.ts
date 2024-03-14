@@ -123,10 +123,20 @@ export class AppComponent implements OnInit {
                         try{
                           paquete.forEach(async (wDetail : WorkExecutionDetail) => {
                             wDetail.data = JSON.parse(wDetail.data);
-                            wDetail.gps = JSON.parse(wDetail.gps);
+                            try {
+                                if (wDetail.gps.trim() !== '') {
+                                    wDetail.gps = JSON.parse(wDetail.gps);
+                                    console.log("La cadena JSON de gps se ha analizado correctamente");
+                                } else {
+                                    console.log("La cadena JSON de gps está vacía");
+                                }
+                            } catch (error) {
+                                console.log("Error al analizar JSON de gps:", error);
+                            }
                             wDetail.gps = [wDetail.gps[1],wDetail.gps[0]];
                             wDetail.work_execution = wExecution.id_from_server;  
-                            console.log("Detalle gps" , wDetail.gps);                      
+/*                             console.log("Detalle gps JSON" ,JSON.parse(wDetail.gps));                      
+                            console.log("Detalle gps" ,[wDetail.gps[1],wDetail.gps[0]]);  */                     
                           });
 
                           let response = await firstValueFrom(this.apiService.sendRegistroAsyncExecutionDetail(paquete));
