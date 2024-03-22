@@ -112,6 +112,7 @@ export class DatabaseService extends ElectronService {
                 + "  time TEXT, \n"
                 + "  sended BOOLEAN, \n"
                 + "  data TEXT, \n"
+                + "  precision TEXT, \n"
                 + "  gps TEXT, \n"
                 + "  has_events BOOLEAN, \n"
                 + "  events TEXT, \n"
@@ -1256,7 +1257,7 @@ export class DatabaseService extends ElectronService {
     return new Promise<boolean>((resolve, reject) => {
       let db = new this.sqlite.Database(this.file);
       let insertSql =
-        "INSERT INTO work_execution_details (id_work_execution , time , sended, data , gps , has_events , events) VALUES (?,?,?,?,?,?,?);";
+        "INSERT INTO work_execution_details (id_work_execution , time , sended, data , precision , gps , has_events , events) VALUES (?,?,?,?,?,?,?,?);";
 
       // Ejecutar la inserción en la tabla 'work_execution'
       db.run(
@@ -1266,6 +1267,7 @@ export class DatabaseService extends ElectronService {
           o.time.format("YYYY-MM-DD H:mm:ss"),
           0,
           o.data,
+          o.precision,
           o.gps,
           o.has_events,
           o.events,

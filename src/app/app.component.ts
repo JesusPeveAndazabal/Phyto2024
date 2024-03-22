@@ -72,7 +72,7 @@ export class AppComponent implements OnInit {
       let sended = [];
       let onExecution = false; //Variable de control que evita envíos duplicados y sobre carga del tráfico.
 
-      setInterval(()=>{
+ /*      setInterval(()=>{
         if(!onExecution){
           onExecution = true;
 
@@ -126,6 +126,8 @@ export class AppComponent implements OnInit {
                             try {
                                 if (wDetail.gps.trim() !== '') {
                                     wDetail.gps = JSON.parse(wDetail.gps);
+                                    console.log(wDetail.gps);
+                                    console.log("Detalle gps JSON" ,JSON.parse(wDetail.gps));
                                     console.log("La cadena JSON de gps se ha analizado correctamente");
                                 } else {
                                     console.log("La cadena JSON de gps está vacía");
@@ -134,9 +136,7 @@ export class AppComponent implements OnInit {
                                 console.log("Error al analizar JSON de gps:", error);
                             }
                             wDetail.gps = [wDetail.gps[1],wDetail.gps[0]];
-                            wDetail.work_execution = wExecution.id_from_server;  
-/*                             console.log("Detalle gps JSON" ,JSON.parse(wDetail.gps));                      
-                            console.log("Detalle gps" ,[wDetail.gps[1],wDetail.gps[0]]);  */                     
+                            wDetail.work_execution = wExecution.id_from_server;                  
                           });
 
                           let response = await firstValueFrom(this.apiService.sendRegistroAsyncExecutionDetail(paquete));
@@ -173,6 +173,6 @@ export class AppComponent implements OnInit {
         iteration();
 
         }
-      },9000); 
+      },9000); */
   }
 }

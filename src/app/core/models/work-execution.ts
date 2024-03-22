@@ -31,6 +31,7 @@ export interface WorkExecutionDetail{
   time : moment.Moment;
   sended : boolean;
   data : string;
+  precision : string;
   gps : string|any;
   has_events : boolean;
   events : string;

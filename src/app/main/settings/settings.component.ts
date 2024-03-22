@@ -37,7 +37,7 @@ export class SettingsComponent  implements OnInit {
     }
   }
 
-  public mostrarAlertaChica(html){
+  public mostrarAlertaChica(html: string){
     Swal.fire({
       width: 500,
       showCloseButton: true,

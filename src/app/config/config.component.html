@@ -1,83 +1,25 @@
-<nav class="navbar bg-body-tertiary">
-  <div class="container">
-    <span class="navbar-brand mb-0 h1">Parámetros de trabajo</span>
+<nav class="navbar bg-body-tertiary mt-5">
+  <div class="container d-flex justify-content-center">
+    <span class="navbar-brand mb-0 h1"><strong>Parámetros de trabajo</strong></span>
   </div>
 </nav>
 
-<div class="container mt-1">
 
-  <form [formGroup]="formData" (submit)="save()" class="mt-4">
+<div class="container mt-1">
+  <form [formGroup]="formData" (submit)="save()" class="was-validated mt-5">
     <div class="form-group row">
       <label for="vol_alert_on" class="col-sm-2 col-form-label">Volumen mínimo (L):</label>
       <div class="col-sm-10">
-        <input type="number" class="form-control" id="vol_alert_on" formControlName="vol_alert_on" placeholder="100">
+        <input type="text" class="form-control" id="vol_alert_on" formControlName="vol_alert_on" placeholder="100" pattern="^(?:1\d{2}|2000|[1-9]\d{2,3})$" required>
         <div id="textoo" class="form-text">
-          Cuando el volumen de agua llegue al mínimo se pausará el trabajo y deberá recargar
+          <strong>Cuando el volumen de agua llegue al mínimo se pausará el trabajo y deberá recargar</strong> 
+        </div>
+        <div class="invalid-feedback">
+          Por favor ingrese un valor válido entre 100 y 2000
         </div>
       </div>
     </div>
     <hr style="background-color:black;">
-    <div class="row mt-2">
-      <div class="col-md-4">
-        <div class="form-group row">
-          <label for="rango_caudal" class="col-sm-12 col-form-label">Rangos del caudal (L/min):</label>
-          <div class="col-sm-10">
-          </div>
-        </div>
-      </div>
-      <div class="col-md-4">
-        <div class="form-group row">
-          <label for="min_wflow" class="col-sm-4 col-form-label">Mínimo:</label>
-          <div class="col-sm-6">
-            <input type="number" class="form-control" formControlName="min_wflow" placeholder="10">
-          </div>
-        </div>
-      </div>
-      <div class="col-md-4">
-        <div class="form-group row">
-          <label for="max_wflow" class="col-sm-4 col-form-label">Máximo:</label>
-          <div class="col-sm-6">
-            <input type="number" class="form-control" formControlName="max_wflow" placeholder="17">
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="row mt-3">
-      <div class="col-md-3">
-        <div class="form-group row">
-          <label for="rango_presion" class="col-sm-12 col-form-label">Rangos de presión:</label>
-          <div class="col-sm-10">
-          </div>
-        </div>
-      </div>
-      <div class="col-md-3">
-        <div class="form-group row">
-          <label for="unit_pressure" class="col-sm-7 col-form-label">Unidad de medida:</label>
-          <select formControlName="unit_pressure" class="form-select col-sm-3">
-            <option selected>U.M.</option>
-            <option *ngFor="let item of pressure_items" [value]="item.value">{{ item.name }}</option>
-          </select>
-        </div>
-      </div>
-      <div class="col-md-3">
-        <div class="form-group row">
-          <label for="min_pressure" class="col-sm-4 col-form-label">Mínimo:</label>
-          <div class="col-sm-6">
-            <input type="number" class="form-control" formControlName="min_pressure" placeholder="10">
-          </div>
-        </div>
-      </div>
-      <div class="col-md-3">
-        <div class="form-group row">
-          <label for="max_pressure" class="col-sm-4 col-form-label">Máximo:</label>
-          <div class="col-sm-6">
-            <input type="number" class="form-control" formControlName="max_pressure" placeholder="17">
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <button type="button" class="btn btn-secondary btn-block mt-3" (click)="save()">Verificar y guardar</button>
+    <button type="button" class="btn btn-primary btn-block mt-3" (click)="save()">Verificar y guardar</button>
   </form>
 </div>

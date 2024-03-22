@@ -17,6 +17,10 @@ import { Configuration } from '../../utils/configuration';
 import * as moment from 'moment';
 import { LocalConf } from '../../models/local_conf';
 import { WorkExecution , WorkExecutionDetail } from '../../models/work-execution';
+//import { getDistance} from 'geolib';
+
+import isOnline from 'is-online';
+
 
 //Este se comporta como el device_manager
 
@@ -64,7 +68,10 @@ export class ArduinoService {
 
   timerImproductive: any;
   currentTimeImproductive: number = 0;
+
+  //VARIABLES PARA LOS ENUMERADORES
   data : any = {};
+  precision : any = {};
 
   volumenDescontado = 0;
   volumenInicial = 100;
@@ -74,21 +81,42 @@ export class ArduinoService {
   speedalert: number = 0;
   info: number = 0;
   tiempocondicion = 0;
+
+  
   accumulated_volume = 0;
   accumulated_distance = 0;
+  public distance = 0;
+  public distanciaHtml = 0;
+  pointInicial;
+  pointFinal;
+
+  gpsVar = 0;
+
+
+  // Variables para almacenar las coordenadas anteriores del GPS
+  previousGpsCoordinates: number[] | null = null;
+
+  gpsCoordinatesInicial: number[];
+  gpsCoordinatesFinal: number[];
+
+  gpsCoordinates: number[];
 
   volumenAcumul = 0;
   ultimoTiempoNotificacion: number = 0;
   public dataGps = false; // Variable para verificar si hay datos del GPS
+  public conectInternet = false; // Variable para verificar si hay internet o no
 
   inputPressureValue: number | undefined;
   lastVolume: number | null = null;
+  hasGPSData = true;
 
   // private sensorSubjectMap: Map<Sensor, Subject<Sensor>> = new Map();
   private sensorSubjectMap: Map<Sensor, Subject<number|number[]>> = new Map();
 
   constructor( private electronService: ElectronService , private databaseService : DatabaseService) {
     this.setupSensorSubjects();
+    this.checkInternetConnection();
+    this.getDistancia();
 
     this.databaseService.getLastWorkExecution().then((workExecution : WorkExecution) => {
       if(workExecution){
@@ -107,8 +135,8 @@ export class ArduinoService {
     //Iteracion para recorre los valores de los sensores y guardarlos localmente
     let instance = this;
     setInterval(async () => {
+      this.checkInternetConnection();
       let onExecution = false;
-
     
       // Agregar sensores para futuros cambios
       this.data = {
@@ -120,8 +148,11 @@ export class ArduinoService {
         [Sensor.VOLUME_CONTAINER]: 0,
         [Sensor.DISTANCE_NEXT_SECTION]: 0,
         [Sensor.ACCUMULATED_VOLUME] : parseFloat(this.accumulated_volume.toFixed(2)),
-        [Sensor.ACCUMULATED_HECTARE] : this.accumulated_distance,
+        [Sensor.ACCUMULATED_HECTARE] : parseFloat(this.accumulated_distance.toFixed(2)), //Velocidad 
+        [Sensor.TOTAL_DISTANCE] : 0, //Distancia por tramo,
+        [Sensor.ACCUMULATED_DISTANCE] : parseFloat(this.distanciaHtml.toFixed(2)), //Calculo
       }
+
     
       this.listArduinos.forEach(arduino => {
         arduino.message_from_device.forEach((sensor) => {
@@ -129,59 +160,73 @@ export class ArduinoService {
         this.data = { ...this.data, ...this.mapToObject(arduino.message_from_device) };
         arduino.message_from_device = new Map<Sensor, number | number[]>();
       });
-    
-      // Verificar si hay datos del GPS
-      if (this.data[Sensor.GPS]) {
+      
+      this.hasGPSData = this.data[Sensor.GPS] !== undefined && this.data[Sensor.GPS] !== null && this.data[Sensor.GPS] != this.gpsVar;
+      if (this.hasGPSData) {
         this.dataGps = true;
         console.log("Si hay datos del gps.");
-      }else {
+      } else {
         this.dataGps = false;
-        console.log("¡Alerta! No hay datos del GPS." ,this.dataGps);
+        console.log("¡Alerta! No hay datos del GPS.", this.dataGps);
         // Aquí puedes agregar cualquier lógica de alerta que necesites
-      } 
+      }
+
+      console.log("VARIABLE GPS" , this.dataGps);
+
+      
+      this.gpsVar = this.data[Sensor.GPS];
+      console.log("GPS VAR" , this.gpsVar); 
     
       // Continuar solo si hay datos del GPS
         Object.entries(this.data).forEach((value) => {
           let sensor = parseInt(value[0]) as Sensor;
           this.notifySensorValue(sensor, sensor == Sensor.GPS ? value[1] as number[] : value[1] as number);
-        });
+        }); 
     
         if (!onExecution) {
           onExecution = true;
-
-           if (this.data[`${Sensor.WATER_FLOW}`] > 1) {
+    
+          if (await this.data[`${Sensor.WATER_FLOW}`] > 1) {
             this.tiempocondicion = 1;
             //this.data[Sensor.SPEED] = 7.4;
+            //Hallar la distancia - la velocidad se divide entre 3.6 para la conversion de metros por segundos
             this.data[Sensor.DISTANCE_NEXT_SECTION] = this.data[Sensor.SPEED] / 3.6;
-            console.log("CALCULO DISTANCIA", this.data[Sensor.DISTANCE_NEXT_SECTION]);
-          }else{
+
+            //Obtener las coordenadas del GPS
+            this.gpsCoordinates = this.data[Sensor.GPS] as number[];
+
+            //Calcular la distancia entre las coordenadas GPS actuales y las coordenadas GPS anteriores (si estan disponibles)
+             if(this.previousGpsCoordinates != null){
+              this.data[Sensor.TOTAL_DISTANCE] = this.getDistance(
+                {latitude : this.previousGpsCoordinates[0] , longitude : this.previousGpsCoordinates[1] },
+                {latitude : this.gpsCoordinates[0], longitude : this.gpsCoordinates[1]},
+              );
+
+              console.log("La distancia entre las cooordenadas GPS anteriores y las actuales es:" , this.data[Sensor.TOTAL_DISTANCE].toFixed(2) , "metros");
+            } 
+            this.previousGpsCoordinates = [...this.gpsCoordinates];
+          }else {
             this.tiempocondicion = 4;
+            this.gpsCoordinatesFinal = this.data[Sensor.GPS];
           }
-
-          // Loop que envía los registros por guardar en el servidor vía API/REST
-          // Enviar siempre cada 100ms pero solo guardar cada 1s
-        
-
+    
           const iteration = async () => {
             let currentWork: WorkExecution = await this.databaseService.getLastWorkExecution();
-            if(Sensor.VOLUME){
+            if (Sensor.VOLUME in this.data) {
               this.accumulated_volume += this.data[`${Sensor.VOLUME}`];
               this.accumulated_distance += this.data[`${Sensor.DISTANCE_NEXT_SECTION}`];
-              //console.log("acumulado de distancia" , this.accumulated_distance);
-              //console.log("VOLUMEN ACUMULADO" , this.data[`${Sensor.ACCUMULATED_VOLUME}`]);
-              //console.log("VOLUMEN ACUMULADO" , this.accumulated_volume);
+              this.distanciaHtml += this.data[`${Sensor.TOTAL_DISTANCE}`];
+              console.log("Valor acumulado de la distancia", this.distanciaHtml);
+              /* Hallar la distancia con el algorimo comentado */
+              //this.accumulated_distance += this.distance;
             }
     
             if (currentWork) {
-              // Evaluar Tiempo Productivo e improductivo
-              if (this.data[`${Sensor.WATER_FLOW}`] > 1) {
-                //this.tiempocondicion = 1;
-                // Contar productivo
+              if (await this.data[`${Sensor.WATER_FLOW}`] > 1) {
                 instance.tiempoProductivo.start();
                 instance.tiempoImproductivo.stop();
+
               } else {
-                // Improductivo
-                //this.tiempocondicion = 4;
                 instance.tiempoImproductivo.start();
                 instance.tiempoProductivo.stop();
               }
@@ -189,76 +234,76 @@ export class ArduinoService {
               currentWork.downtime = instance.tiempoImproductivo.time();
               currentWork.working_time = instance.tiempoProductivo.time();
     
-              // Actualizar el tp e i en la db local
               await this.databaseService.updateTimeExecution(currentWork);
             }
     
-            // Actualizar isRunning cada vez que se acabe el volumen de agua o se inicie el trabajo, o se finalice el trabajo.
             if (currentWork && this.isRunning) {
               let gps = this.data[Sensor.GPS];
 
-             
-              
-
-              // Eliminar valvula izquierda, valvula derecha y regulador de presión
-              delete this.data[Sensor.GPS];
-              delete this.data[Sensor.VALVE_LEFT];
-              delete this.data[Sensor.VALVE_RIGHT];
-              delete this.data[Sensor.PRESSURE_REGULATOR];
-
-              console.log("Impresion de data" , JSON.stringify(this.data));
-            
               // Evaluar los eventos
               let events: string[] = [];
               let has_events = false;
-            
+    
               this.localConfig = await this.databaseService.getLocalConfig();
+              //console.log("Trabajo" , currentWork);
+
               this.caudalNominal = await JSON.parse(currentWork.configuration).water_flow;
               this.info = await JSON.parse(currentWork.configuration).pressure;
               this.speedalert = await JSON.parse(currentWork.configuration).speed;
-            
+
+              this.precision = {
+                ...this.precision,
+                [Sensor.WATER_FLOW] : Math.round(100 - ((Math.abs(this.data[`${Sensor.WATER_FLOW}`] - this.caudalNominal)/this.caudalNominal) * 100)),
+                [Sensor.PRESSURE] : Math.round(100 - ((Math.abs(this.data[`${Sensor.PRESSURE}`] - this.info) / this.info) * 100)),
+                [Sensor.SPEED] : Math.round(100  - ((Math.abs(this.data[`${Sensor.SPEED}`] - this.speedalert) / this.speedalert) * 100)),
+              }
+
               if (this.data[Sensor.WATER_FLOW] < this.caudalNominal * 0.5 || this.data[Sensor.WATER_FLOW] > this.caudalNominal * 1.5) {
                 has_events = true;
                 events.push("EL CAUDAL ESTA FUERA DEL RANGO ESTABLECIDO");
               }
-            
+    
               if (this.data[Sensor.PRESSURE] < this.info * 0.5 || this.data[Sensor.PRESSURE] > this.info * 1.5) {
                 has_events = true;
                 events.push("LA PRESIÓN ESTA FUERA DEL RANGO ESTABLECIDO");
               }
-            
-              if (this.data[Sensor.SPEED] < this.speedalert * 0.5 || this.data[Sensor.SPEED] > this.speedalert * 1.5) {
+    
+              if (this.data[Sensor.SPEED] < this.speedalert * 0.5 || this.data[Sensor.SPEED] > this.speedalert * 1.5 || this.data[Sensor.SPEED] < this.speedalert * 0.5 || this.data[Sensor.SPEED] > this.speedalert * 1.5) {
                 has_events = true;
                 events.push("LA VELOCIDAD ESTA FUERA DEL RANGO ESTABLECIDO");
               }
-            
+
+              if(this.data[Sensor.PRESSURE] < this.info || this.data[Sensor.PRESSURE] > this.info * 1.5 || this.data[Sensor.WATER_FLOW] < this.caudalNominal * 0.5 || this.data[Sensor.WATER_FLOW] > this.caudalNominal * 1.5){
+                has_events = true;
+                events.push("CAUDAL , PRESIÓN Y VELOCIDAD FUERA DE RANGO");
+              }
+    
               if (!has_events) {
                 events.push("NO HAY EVENTOS REGISTRADOS");
               }
-            
+    
               let wExecutionDetail: WorkExecutionDetail = {
                 id_work_execution: currentWork.id,
                 time: moment(),
                 sended: false,
                 data: JSON.stringify(this.data),
+                precision: JSON.stringify(this.precision),
                 gps: JSON.stringify(gps),
                 has_events: has_events,
-                events: events.join(", "), // Concatenar los eventos en una sola cadena
+                events: events.join(", "),
                 id: 0,
               };
-
-              if(this.dataGps && delete this.data[Sensor.GPS] &&  delete this.data[Sensor.VALVE_LEFT] && delete this.data[Sensor.VALVE_RIGHT] &&  delete this.data[Sensor.PRESSURE_REGULATOR]){
+              //console.log("data" , JSON.stringify(this.data));
+              //console.log("precision" , JSON.stringify(this.precision));
+              //Guardar solo cuando haya datos del gps
+              if (this.dataGps) {
                 await this.databaseService.saveWorkExecutionDataDetail(wExecutionDetail);
-              }else{
+              } else {
                 console.log("No se guardo en la DB");
               }
-            
-            // Guardar en la base de datos
-              
-            
-              onExecution = false;
             }
-            
+    
+            onExecution = false;
           }
     
           let currentTime = moment();
@@ -269,6 +314,7 @@ export class ArduinoService {
         }
       
     }, 200);
+    
   }
 
   findBySensor(sensor : number): ArduinoDevice{
@@ -280,6 +326,11 @@ export class ArduinoService {
     this.currentRealVolume = inicial;
     this.minVolume = minimo;
     this.isRunning = true;
+  }
+
+  getDistancia(){
+    console.log(this.distance, "RETORNO DE DISTANCIA")
+    return this.distance;
   }
 
 
@@ -371,6 +422,39 @@ export class ArduinoService {
       this.currentRealVolume = 0;
       // this.maxVolume = 0;
     }
+
+    getDistance(coord1, coord2) {
+      const R = 6371; // Radio de la Tierra en kilómetros
+      const dLat = this.deg2rad(coord2.latitude - coord1.latitude);
+      const dLon = this.deg2rad(coord2.longitude - coord1.longitude);
+      const a =
+          Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+          Math.cos(this.deg2rad(coord1.latitude)) * Math.cos(this.deg2rad(coord2.latitude)) *
+          Math.sin(dLon / 2) * Math.sin(dLon / 2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      const distanceInKm = R * c; // Distancia en kilómetros
+      const distanceInMeters = distanceInKm * 1000; // Convertir a metros
+      return distanceInMeters;
+    }
+  
+    deg2rad(deg) {
+        return deg * (Math.PI / 180);
+    }
+
+    async checkInternetConnection() {
+      try {
+          const online = await isOnline();
+          if (online) {
+              this.conectInternet = true;
+              //console.log('El procesador tiene conexión a Internet.');
+          } else {
+              this.conectInternet = false;
+              //console.log('El procesador no tiene conexión a Internet.');
+          }
+      } catch (error) {
+          console.error('Error al verificar la conexión a Internet:', error);
+      }
+    } 
 
     /* Algoritmo para el tiempo productivo */
     /* IniciarApp(valorWatterflow : number): void {

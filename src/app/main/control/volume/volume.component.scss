@@ -4,16 +4,17 @@
   --water-level: 40%;
 }
 .circle{
-    position: absolute;
     top:40%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: min(32vw,55vh) ;
-    height: min(32vw,55vh) ;
+    width: min(45vw,75vh) ;
+    height: min(45vw,75vh) ;
     //background: #ccc;
-    border: 5px solid #4973ff;
+    border: 5px solid #ffffff;
     border-radius: 50%;
-    overflow: hidden;
+    max-width: 300px; /* establece un tamaño máximo */
+    max-height: 300px; /* establece un tamaño máximo */
+    overflow: hidden; /* oculta el contenido que excede el tamaño */
     z-index: 9999999;
     aspect-ratio: 1;
 }
@@ -22,7 +23,7 @@
   background-color: rgb(173, 3, 3);
   animation: blink-animation 1s infinite alternate;
   position: absolute;
-  top:40%;
+  //top:40%;
   left: 50%;
   transform: translate(-50%, -50%);
   width: min(32vw,55vh) ;
@@ -44,19 +45,60 @@
   }
 }
 
-#volume-info{
-    position: absolute;
-    top:40%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: min(47vw,75vh) ;
-    height: min(47vw,75vh) ;
-    aspect-ratio: 1;
+#volume-info {
+  position: absolute;
+  top: 30%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(57vw, 95vh);
+  height: min(57vw, 95vh);
+  aspect-ratio: 1;
+  max-width: 420px; /* establece un tamaño máximo */
+  max-height: 490px; /* establece un tamaño máximo */
+  overflow: hidden; /* oculta el contenido que excede el tamaño */
+}
+
+.field {
+  position: relative;
+  width: 105%; /* Ajusta el ancho según sea necesario */
+  height: 80px; /* Ajusta la altura según sea necesario */
+  overflow: hidden; /* Para ocultar partes del camino fuera del contenedor */
+  //background: linear-gradient(to right, #b88b12b6, #b88b12b6); /* Ejemplo de gradiente para el campo */
+  //background-image: url('../../../../assets/images/sueloNuevo.png');
+  background-repeat: no-repeat;
+  background-size: cover;
+  //margin-top: 85%; Para el ttractor caundo hay imagen
+  margin-top: 75%;
+  margin-left: -4%;
+}
+
+/* Estilos para el tractor */
+.tractor {
+  position: absolute;
+  width: 128pt;
+  height: 74pt;
+  //background-color: green; /* Color del tractor */
+  background-image: url("../../../../assets/images/tractor2.gif");
+  background-repeat: no-repeat;
+  background-size: cover;
+  margin-bottom: 1%;
+  animation: moveTractor 5s linear infinite; /* Ajusta la duración y el tipo de animación según sea necesario */
+}
+
+@keyframes moveTractor {
+  0% {
+    left: -100px; /* Posición inicial fuera del campo */
+    //transform: scaleX(-1); /* Si el tractor mira hacia la izquierda, invierte la imagen */
+  }
+  100% {
+    left: 100%; /* Posición final al final del campo */
+    //transform: scaleX(-1); /* Si el tractor mira hacia la izquierda, invierte la imagen */
+  }
 }
 
 #output-controls{
     position: absolute;
-    top:93%;
+    top:90%;
     left: 50%;
     transform: translate(-50%, -50%);
 }
@@ -66,7 +108,6 @@
     bottom : 0;
     left:0;
     width: 100%;
-
     height: 5%;
     mask: url("../../../../assets/images/wave2.png");
     mask-size: 1000px 100%;
@@ -114,6 +155,9 @@ text {
 }
 
 /*  */
+
+
+
 
 @import "bourbon/app/assets/stylesheets/bourbon";
 $button-background-color:       #040403;
@@ -290,7 +334,7 @@ ion-icon {
 
 #animation-frame{
   position: absolute;
-  top:40%;
+  top:25%;
   left: 50%;
   transform: translate(-50%, -50%);
   width: min(32vw,55vh) ;

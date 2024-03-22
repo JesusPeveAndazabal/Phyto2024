@@ -27,9 +27,13 @@ export enum Sensor{
     TEMPERATURE = 8,
     HUMIDITY = 9,
     VOLUME_CONTAINER = 10,
-    DISTANCE_NEXT_SECTION = 11,
+    DISTANCE_NEXT_SECTION = 11, //Calcula la distancia por tramo - calculo por velocidad
     ACCUMULATED_VOLUME = 12,
-    ACCUMULATED_HECTARE= 13,
+    ACCUMULATED_HECTARE= 13, //Acumulado de la distancia
+
+    TOTAL_DISTANCE = 14,
+    ACCUMULATED_DISTANCE = 15,
+
 
     VALVE_LEFT = 20,
     VALVE_RIGHT = 21,

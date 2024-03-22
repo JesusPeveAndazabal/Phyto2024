@@ -15,6 +15,8 @@ import { SettingsComponent } from './settings/settings.component';
 import { ArduinoService } from '../core/services/arduino/arduino.service';
 import { LocalConf } from '../core/models/local_conf';
 
+
+
 @Component({
   selector: 'app-main',
   templateUrl: './main.component.html',
@@ -71,6 +73,7 @@ export class MainComponent implements OnInit,AfterViewInit{
 
   async ngOnInit() {
     await this.databaseService.openConnection();
+    
 
     this.login = await this.databaseService.getLogin();
     this.lastWorkExecution = await this.databaseService.getLastWorkExecution();
@@ -176,8 +179,7 @@ export class MainComponent implements OnInit,AfterViewInit{
   onStartListenPower($event : any){
     this.listenTime = moment();
   }
-
-
+  
   async onClickPower(){
     this.lastWorkExecution = await this.databaseService.getLastWorkExecution();
     console.log(this.lastWorkExecution, "dio click al boton verde");

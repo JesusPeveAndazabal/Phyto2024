@@ -8,6 +8,16 @@ html, body {
     color: var(--text-color);
 }
 
+.tractor {
+    width: 100px; /* Ancho del tractor */
+    height: 60px; /* Altura del tractor */
+    background: url('./app/main/control/volume/images/tractor1.jpg') no-repeat; /* Imagen del tractor */
+    position: absolute;
+    bottom: 0;
+    left: 50%; /* Ajusta la posición del tractor según sea necesario */
+    transform: translateX(-50%); /* Centra horizontalmente el tractor */
+}
+
 .swal2-timer-progress-bar {
   background: #2196f3; /* Reemplaza 'tu-color-aqui' con el color deseado */
 }

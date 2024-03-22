@@ -72,6 +72,39 @@ ion-modal ion-toolbar {
   --border-style: solid;
 }
 
+.internet-button-on{
+  --background : #00c700 !important;
+  --border-width: 0px;
+  --border-style: solid;
+  --color: rgb(255, 255, 255);
+
+  &::part(native){
+      --box-shadow: 0px 0px 20px 7px #00c700;
+  }
+}
+
+
+@keyframes blink {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.internet-button-off{
+  --background : #c52727 !important;
+  //--border-color : red;
+  --border-width: 0px;
+  --border-style: solid;
+  animation: blink 1s infinite;
+}
+
+
 .gps-button-on{
   --background : #00c700 !important;
   --border-width: 0px;

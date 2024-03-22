@@ -35,6 +35,12 @@
               <span class="pi pi-power-off"></span>
             </ion-fab-button>
 
+            <ion-fab-button id="internet-conection" shape="round" size="small" 
+            class="m-0" [ngClass]="{'internet-button-on': arduinoService.conectInternet, 'internet-button-off': !arduinoService.conectInternet}">
+            <i class="bi bi-wifi" style="font-size:151%;"></i>
+            </ion-fab-button>
+
+
             <ion-fab-button id="person-button" shape="round" size="small" class="m-0">
               <span class="pi pi-user"></span>
             </ion-fab-button>

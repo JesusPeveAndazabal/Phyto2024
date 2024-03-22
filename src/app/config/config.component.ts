@@ -34,13 +34,8 @@ export class ConfigComponent implements OnInit {
 
     this.formData = this.fb.group({
       // ws_server: ['',[Validators.required,Validators.pattern('(?:(?:(?:ht|f)tp)s?://)|(ws?s)?[\\w_-]+(?:\\.[\\w_-]+)+([\\w.,@?^=%&:/~+#-]*[\\w@?^=%&/~+#-])?')]],
-      api_server: 'https://ps-test.fitosatbeta.com',
+      api_server: 'http://192.168.60.209:8000',
       vol_alert_on: [0,[Validators.required,Validators.min(1)]],
-      min_wflow: [0,[Validators.required,Validators.min(1)]],
-      max_wflow: [0,[Validators.required,Validators.min(1)]],
-      unit_pressure: [0,[Validators.required,Validators.min(1)]],
-      min_pressure: [0,[Validators.required,Validators.min(1)]],
-      max_pressure: [0,[Validators.required,Validators.min(1)]],
     });
    }
 
@@ -56,11 +51,6 @@ export class ConfigComponent implements OnInit {
       this.formData.setValue({
         api_server : config.api_server,
         vol_alert_on : config.vol_alert_on,
-        min_wflow : config.min_wflow,
-        max_wflow : config.max_wflow,
-        unit_pressure : config.unit_pressure.toString(),
-        min_pressure : config.min_pressure,
-        max_pressure : config.max_pressure
       });
     }
 
