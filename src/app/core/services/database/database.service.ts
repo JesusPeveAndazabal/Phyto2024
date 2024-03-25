@@ -466,6 +466,7 @@ export class DatabaseService extends ElectronService {
       });
     });
   }
+  
 
   /**
    * Get the Nozzle's data from the database

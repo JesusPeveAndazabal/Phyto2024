@@ -164,18 +164,18 @@ export class ArduinoService {
       this.hasGPSData = this.data[Sensor.GPS] !== undefined && this.data[Sensor.GPS] !== null && this.data[Sensor.GPS] != this.gpsVar;
       if (this.hasGPSData) {
         this.dataGps = true;
-        console.log("Si hay datos del gps.");
+        //console.log("Si hay datos del gps.");
       } else {
         this.dataGps = false;
-        console.log("¡Alerta! No hay datos del GPS.", this.dataGps);
+        //console.log("¡Alerta! No hay datos del GPS.", this.dataGps);
         // Aquí puedes agregar cualquier lógica de alerta que necesites
       }
 
-      console.log("VARIABLE GPS" , this.dataGps);
+      //console.log("VARIABLE GPS" , this.dataGps);
 
       
       this.gpsVar = this.data[Sensor.GPS];
-      console.log("GPS VAR" , this.gpsVar); 
+      //console.log("GPS VAR" , this.gpsVar); 
     
       // Continuar solo si hay datos del GPS
         Object.entries(this.data).forEach((value) => {
@@ -202,7 +202,7 @@ export class ArduinoService {
                 {latitude : this.gpsCoordinates[0], longitude : this.gpsCoordinates[1]},
               );
 
-              console.log("La distancia entre las cooordenadas GPS anteriores y las actuales es:" , this.data[Sensor.TOTAL_DISTANCE].toFixed(2) , "metros");
+              //console.log("La distancia entre las cooordenadas GPS anteriores y las actuales es:" , this.data[Sensor.TOTAL_DISTANCE].toFixed(2) , "metros");
             } 
             this.previousGpsCoordinates = [...this.gpsCoordinates];
           }else {
@@ -216,7 +216,7 @@ export class ArduinoService {
               this.accumulated_volume += this.data[`${Sensor.VOLUME}`];
               this.accumulated_distance += this.data[`${Sensor.DISTANCE_NEXT_SECTION}`];
               this.distanciaHtml += this.data[`${Sensor.TOTAL_DISTANCE}`];
-              console.log("Valor acumulado de la distancia", this.distanciaHtml);
+              //console.log("Valor acumulado de la distancia", this.distanciaHtml);
               /* Hallar la distancia con el algorimo comentado */
               //this.accumulated_distance += this.distance;
             }
@@ -329,7 +329,7 @@ export class ArduinoService {
   }
 
   getDistancia(){
-    console.log(this.distance, "RETORNO DE DISTANCIA")
+    //console.log(this.distance, "RETORNO DE DISTANCIA")
     return this.distance;
   }
 

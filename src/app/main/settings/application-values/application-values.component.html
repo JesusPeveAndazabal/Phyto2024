@@ -24,13 +24,16 @@
                 <label class="mb-1 block font-bold" for="horizontal">Unidad</label>
                 <p-dropdown [ngClass]="isSubmitted && formData.controls['unit'].errors ? 'ng-invalid ng-dirty' : ''"
                   formControlName="unit" [options]="unitsPressure" class="full-dropdown" optionLabel="name" optionValue="value" placeholder="Elegir"
-                  (onChange)="changeUnit($event)">
+                  >
                 </p-dropdown>
 
-                <label class="mb-1 mt-2 block font-bold" for="horizontal">Presión</label>
-                <select formControlName="pressure" placeholder="Seleccionar tipo" fill="outline" class="form-select" style="min-height: 45px;">
+                <!-- <label class="mb-1 mt-2 block font-bold" for="horizontal">Presión</label> -->
+                <!-- <select formControlName="pressure" placeholder="Seleccionar tipo" fill="outline" class="form-select" style="min-height: 45px;">
                   <option *ngFor="let item of pressures_items" [value]="item.value">{{ item.label }}</option>
-                </select>
+                </select> -->
+                <label class="mb-1 mt-2 block font-bold" for="horizontal">Presión</label>
+                <input type="number" formControlName="pressure" placeholder="Ingrese la presión" class="form-control" style="min-height: 45px;">
+                
                 <small  *ngIf="isSubmitted && handleError('pressure','required')" class="p-error">
                   Este campo es requerido
                 </small>
@@ -73,16 +76,18 @@
 
       <ion-col size="7">
         <div class="flex flex-row align-items-center gap-2">
-          <ion-input [(ngModel)]="quantity" style="min-height: 40px;" placeholder="0" type="number" fill="outline"></ion-input>
+          <ion-input [(ngModel)]="quantity" style="min-height: 40px; margin-top: 7px;" placeholder="0" type="number" fill="outline"></ion-input>
           <ion-select [(ngModel)]="type" style="min-height: 40px;" placeholder="Tipo" fill="outline">
             <ion-select-option *ngFor="let type of nozzleTypes" value="{{type.id}}">{{type.name}}</ion-select-option>
           </ion-select>
+
           <!-- Lugar donde debe ir el select de color  -->
-          <!-- Dentro del formulario -->
-<!--           <ion-label>Color</ion-label>
-          <ion-select [(ngModel)]="selectedColor" placeholder="Seleccionar color">
+          <ion-select [(ngModel)]="selectedColor" style="min-height: 40px;" placeholder = "Color" fill="outline">
             <ion-select-option *ngFor="let color of nozzleColors" [value]="color.id">{{ color.name }}</ion-select-option>
-          </ion-select> -->
+          </ion-select>
+
+          <!-- <div [style.width.px]="60" [style.height.px]="18" [style.backgroundColor]="getColorCode()"></div> -->
+
         </div>
         <ion-button (click)="addNozzles()" style="margin-left: 15%;">
           <i class="bi bi-plus-circle-fill"></i>
@@ -90,6 +95,7 @@
         </ion-button>
         <!-- The reorder gesture is disabled by default, enable it to drag and drop items -->
         <!-- Casting $event to $any is a temporary fix for this bug https://github.com/ionic-team/ionic-framework/issues/24245 -->
+        <!-- Mostrar las boquillas generadas -->
         <p-orderList (onReorder)="handleReorder()" [value]="nozzleConfig" [listStyle]="{ 'max-height': '68vh','padding': '0' }" [dragdrop]="false">
           <ng-template let-item  pTemplate="item">
             <ion-item id="row_{{ item.number }}">

@@ -4,14 +4,16 @@ import { Component, Injectable, OnInit } from '@angular/core';
 import { ItemReorderEventDetail, ModalController } from '@ionic/angular';
 import { NozzlesConfiguration, WorkExecutionConfiguration,NozzleColor, NozzleType, Nozzles, WorkExecution } from './../../../core/models/models';
 import { AlertController } from '@ionic/angular';
-import { UnitPressure, UnitPressureEnum,config,convertPressureUnit } from './../../../core/utils/global';
+import { UnitPressure, UnitPressureEnum,config,convertPressureUnit , calcular_caudal_objetivo} from './../../../core/utils/global';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import * as moment from 'moment';
+
 import Swal from 'sweetalert2';
 import { ArduinoService } from '../../../core/services/arduino/arduino.service';
 import { SettingsComponent } from '../settings.component';
 //import { SettingsComponent } from '../settings.component';
 // import { DialogService } from 'primeng/dynamicdialog';
+
 
 @Component({
   selector: 'app-application-values',
@@ -26,7 +28,8 @@ export class ApplicationValuesComponent  implements OnInit {
   weConfiguration : WorkExecutionConfiguration | undefined;
   nozzleConfig : NozzlesConfiguration[] = [];
 
-  selectedColors: number[] = [];
+  selectedColor: any = 0; // Asigna un valor por defecto si es necesario
+  color: any = 0; // Asigna un valor por defecto
   quantity : number = 0;
   type : any = 0;
   total : number = 0;
@@ -35,6 +38,18 @@ export class ApplicationValuesComponent  implements OnInit {
   isSubmitted : boolean = false;
   // item: { type: any };
 
+
+  ConsumoTotalBlue = 0;
+  ConsumoTotalBlack = 0;
+  ConsumoTotalOrange = 0;
+  ConsumoTotalRed = 0;
+  ConsumoTotalGreen = 0;
+
+  minPressure = 1;
+  maxPressure = 20;
+
+
+  saveNozzles = 0;
   pressures_items = [{label: "Pressure", value: 0}];
 
   private pressure_values : any[] = [];
@@ -59,20 +74,31 @@ export class ApplicationValuesComponent  implements OnInit {
     this.nozzleTypes = await this.dbService.getNozzleTypeData();
     this.nozzles = await this.dbService.getNozzlesData();
 
-    // console.log(this.nozzleColors, "nozzleColors");
-    // console.log(this.nozzleTypes, "nozzleTypes");
+    console.log("nozzleColors", this.nozzleColors);
+    console.log("nozzleTypes", this.nozzleTypes);
+    console.log("nozzleTypes", this.nozzles);
 
+    this.nozzles = await this.dbService.getNozzlesData();
+
+
+/*     //Esto sirve para buscar en la tabla añadida
     this.pressure_values = this.nozzles.map(p => { return  {pressure : p.pressure, pressure_unit : p.pressure_unit }})
       .filter((obj, index, self) =>
         index === self.findIndex((o) => (
           o.pressure === obj.pressure && o.pressure_unit === obj.pressure_unit
         ))
-      );
-    // console.log(this.pressure_values, "filtro de nozzles");
+    ); */
+
+    
+    //console.log(this.pressure_values, "filtro de nozzles");
 
     this.currentWorkExecution = await this.dbService.getLastWorkExecution();
+    console.log("CURRENTWORK",this.currentWorkExecution);
+    //condicion para validar que el primer formulario este lleno
     if(this.currentWorkExecution){
+      console.log("Entro al currenwork", this.currentWorkExecution);
       if(this.currentWorkExecution.configuration != ""){
+        console.log("Entro a la segunda condicion", this.currentWorkExecution.configuration);
         this.weConfiguration = await JSON.parse(this.currentWorkExecution.configuration);
         this.nozzleConfig = this.weConfiguration!.nozzles;
         this.formData.setValue({
@@ -82,8 +108,7 @@ export class ApplicationValuesComponent  implements OnInit {
           unit: await this.weConfiguration?.unit,
           width : await this.weConfiguration?.width,
         });
-
-        this.changeUnit({value: this.weConfiguration?.unit});
+        //this.changeUnit({value: this.weConfiguration?.unit});
 
         setTimeout(() => this.updateSummary(null),200);
       }
@@ -117,6 +142,7 @@ export class ApplicationValuesComponent  implements OnInit {
   }
 
   async confirm() {
+    //console.log("Presion", this.formData);
     //console.log("Boton confirmar async");
     this.isSubmitted = true;
     if(this.formData.valid){
@@ -144,8 +170,8 @@ export class ApplicationValuesComponent  implements OnInit {
 
       //console.log("Deberria regular" ,this.weConfiguration?.pressure);
       //Esto es para mandar el comando de regulacion desde el confirmar del boton 
-      this.arduinoService.regulatePressureWithBars(this.weConfiguration?.pressure);
-      console.log(this.weConfiguration?.pressure);
+      //this.arduinoService.regulatePressureWithBars(this.weConfiguration?.pressure);
+     
 
       let wExecution : WorkExecution ={
         id : this.currentWorkExecution ? this.currentWorkExecution.id : 0,
@@ -199,24 +225,89 @@ export class ApplicationValuesComponent  implements OnInit {
   }
 
   getColorCode(id: number): string {
-    const color = this.nozzleColors.find(c => c.id === id);
-    //console.log("Color" , color);
-    return color ? color.code : 'transparent'; // Devuelve el código del color si se encuentra, de lo contrario, devuelve 'transparent'
+    this.color = this.nozzleColors.find(c => c.id === id);
+    //console.log("Color" , this.color);
+    return this.color ? this.color.code : 'transparent'; // Devuelve el código del color si se encuentra, de lo contrario, devuelve 'transparent'
   }
-  	
-  
+
+  getColorName(colorId: number): string {
+    const color = this.nozzleColors.find(c => c.id === colorId);
+    //console.log("Obtener color" , this.getColorName);
+    return color ? color.name : '';
+  }
+
   handleReorder() {
     //Reorder and changing number of nozzles to new order
     this.nozzleConfig.forEach((item,index) => { item.number = index +1; });
   }
 
+ /*  addNozzles() {
+    if (!this.quantity || !this.type || !this.selectedColor) {
+      return;
+    }
+  
+    for (let i = 0; i < this.quantity; i++) {
+      this.nozzleConfig.push({
+        number: this.nozzleConfig.length + 1,
+        type: this.type,
+        color: this.selectedColor
+      });
+    }
+    console.log("NOZZLECONFIG" , this.nozzleConfig)
+  } */
+
   addNozzles(){
+    this.calculoConsumo();
     if(!this.quantity)
       return;
     for(let i = 0; i < this.quantity; i++)
-      this.nozzleConfig = [...this.nozzleConfig,{number : (this.nozzleConfig.length+1) , type : parseInt(this.type) , color : 0}];
-      // console.log(this.nozzleConfig, "addNozzles");
+      this.nozzleConfig = [...this.nozzleConfig,{number : (this.nozzleConfig.length+1) , type : parseInt(this.type) , color : this.selectedColor}];
+      console.log(this.nozzleConfig, "addNozzles");
+      let unidadPresion = this.unitsPressure;
+
+      //console.log("NOZZLECONFIG", this.type , this.selectedColor, this.formData.value.pressure, this.unitsPressure,this.formData.value.unidadPresion);
+
+/*       let saveNozzles : Nozzles = {
+        id : 0,
+        type : this.type,
+        color : this.selectedColor,
+        pressure : this.formData.value.pressure,
+        pressure_unit : this.unitsPressure[0].value,
+        flow : 2.1,
+      } */
+      //await this.dbService.syncNozzlesData(saveNozzles);
     setTimeout(() => this.updateSummary(null),200);
+  }
+
+  calculoConsumo(){
+    /* 1 : ROJO
+      2 : AZUL
+      5 : VERDE
+      6 : NEGRO
+      7 : ANARANJADO*/
+
+    console.log("PRESION DEL INPUT" , this.formData.value.pressure);
+    let presionConvertida = convertPressureUnit(this.formData.value.pressure , UnitPressureEnum.BAR , UnitPressureEnum.PSI)
+    console.log("PRESION CONVERTIDA" , presionConvertida);
+    console.log("COLOR DEL SELECT" , this.selectedColor);
+    
+ /*    this.pressure_values = this.nozzles.map(p => { return  {pressure : p.pressure, pressure_unit : p.pressure_unit , color : p.color}})
+    .filter((obj, index, self) =>
+      index === self.findIndex((o) => (
+        o.pressure === obj.pressure && o.pressure_unit === obj.pressure_unit && o.color === this.selectedColor
+      ))
+    );
+ */
+
+    this.nozzles.forEach(item => {
+      if (presionConvertida >= item.pressure && presionConvertida <= item.pressure  && this.selectedColor == item.color) {
+          console.log("condicion aceptada", item);
+      }
+    });
+    
+   
+
+      //this.changeUnit({value: this.formData.value.pressure});
   }
 
   /**
@@ -252,17 +343,6 @@ export class ApplicationValuesComponent  implements OnInit {
     });
   }
 
-  // isNullOrNaN(value: number | undefined,nonNullValue : number,item : number) : number {
-  //   if(isNaN(value!)){
-  //     this.invalid_rows++;
-  //     document.getElementById(`row_${item}`)!.setAttribute("style","--background: #ff000057;") ;
-  //   }
-  //   else{
-  //     document.getElementById(`row_${item}`)!.setAttribute("style","--background: transparent;") ;
-  //   }
-
-  //   return !isNaN(value!) ? value! : nonNullValue;
-  // }
   isNullOrNaN(value: number | undefined, nonNullValue: number, item: number): number {
     if (isNaN(value!)) {
       this.invalid_rows++;
@@ -280,7 +360,6 @@ export class ApplicationValuesComponent  implements OnInit {
     return !isNaN(value!) ? value! : nonNullValue;
   }
 
-
   /**
    * The below code is a function that updates the total flow rate of all nozzles based on their configuration and current flow rate.
    * It does this by first mapping the nozzle configuration to their respective flow rates using the find method to match nozzle color and type.
@@ -290,18 +369,22 @@ export class ApplicationValuesComponent  implements OnInit {
   updateSummary(_event : any){
     this.invalid_rows = 0;
     // console.log(this.nozzleConfig, "updateSummary");
+    //console.log("nozzleConfig" , this.nozzleConfig);
     if(this.nozzleConfig.length > 0)
+ 
       this.total = this.nozzleConfig
-        .map(p => this.isNullOrNaN(this.nozzles.find(x => x.color == p.color && x.type == p.type && x.pressure == this.formData.value.pressure)?.flow,0,p.number))
+        .map(p => this.isNullOrNaN(this.nozzles.find(
+          x => x.color == p.color && x.type == p.type && x.pressure == this.formData.value.pressure)?.flow,0,p.number))
         .reduce((a,b)=>{ return a + b; },);
-
     else
       this.total = 0;
+
+      //console.log("THIS.totla" , this.total);
 
     this.totalLabel = `${this.total.toFixed(1)} L/min`;
   }
 
-  changeUnit($event : any){
+  /* changeUnit($event : any){
     // console.log("cambio de item");
     this.pressures_items = [];
     this.pressure_values.forEach((item : any) =>{
@@ -309,9 +392,9 @@ export class ApplicationValuesComponent  implements OnInit {
       let convert_unit = UnitPressure.find(p => p.value == $event.value);
       let converted = parseFloat(convertPressureUnit(item.pressure,item.pressure_unit,$event.value).toFixed(2));
       this.pressures_items.push({label: `${converted} ${convert_unit!.name} (${item.pressure} ${original!.name})`,value : item.pressure})
-
+      console.log("original" , original);
+      console.log("original" , convert_unit);
+      console.log("original" , converted);
     });
-
-    // console.log(info, "changeUnit");
-  }
+  } */
 }

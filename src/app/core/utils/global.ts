@@ -12,8 +12,7 @@ export enum PersonType{
 export enum Mode{
     ONLY_READ = 1,
     ONLY_WRITE = 2,
-    READ_WRITE = 3
-
+    READ_WRITE = 3,
 }
 
 export enum Sensor{
@@ -71,6 +70,44 @@ export enum UnitPressureEnum{
     ATMOSFERA = 3,
     PSI = 4,
     MMHG = 5
+}
+
+export enum Calculos{
+  PresionConstante1 = 60,
+  PresionConstante2 = 90,
+  PresionConstante3 = 120,
+  PresionConstante4 = 150,
+  PresionConstante5 = 300,
+
+  CaudalConstanteBlue1 = 0.32,
+  CaudalConstanteBlue2 = 0.38,
+  CaudalConstanteBlue3 = 0.42,
+  CaudalConstanteBlue4 = 0.50,
+  CaudalConstanteBlue5 = 0.71,
+
+  CaudalConstanteBlack1 = 0.64,
+  CaudalConstanteBlack2 = 0.76,
+  CaudalConstanteBlack3 = 0.86,
+  CaudalConstanteBlack4 = 1.00,
+  CaudalConstanteBlack5 = 1.41,
+
+  CaudalConstanteOrange1 = 0.88,
+  CaudalConstanteOrange2 = 1.06,
+  CaudalConstanteOrange3 = 1.21,
+  CaudalConstanteOrange4 = 1.34,
+  CaudalConstanteOrange5 = 1.90,
+
+  CaudalConstanteRed1 = 1.25,
+  CaudalConstanteRed2 = 1.51,
+  CaudalConstanteRed3 = 1.72,
+  CaudalConstanteRed4 = 1.91,
+  CaudalConstanteRed5 = 2.70,
+
+  CaudalConstanteGreen1 = 1.6,
+  CaudalConstanteGreen2 = 1.93,
+  CaudalConstanteGreen3 = 2.20,
+  CaudalConstanteGreen4 = 2.55,
+  CaudalConstanteGreen5 = 3.60,
 }
 
 export const UnitPressure = [
@@ -155,3 +192,10 @@ export const convertPressureUnit = (value : number,original_unit : UnitPressureE
         break;
     }
 }
+
+export const calcular_caudal_objetivo = (caudal_inicial: number, presion_objetiva: number, presion_inicial: number, presion_final: number, caudal_final: number): number => {
+  const caudal_objetivo = caudal_inicial + ((presion_objetiva - presion_inicial) / (presion_final - presion_inicial)) * (caudal_final - caudal_inicial);
+  return caudal_objetivo;
+}
+
+
