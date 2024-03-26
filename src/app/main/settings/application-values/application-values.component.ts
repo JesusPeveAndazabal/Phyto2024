@@ -28,7 +28,7 @@ export class ApplicationValuesComponent  implements OnInit {
   weConfiguration : WorkExecutionConfiguration | undefined;
   nozzleConfig : NozzlesConfiguration[] = [];
 
-  selectedColor: any = 0; // Asigna un valor por defecto si es necesario
+  selectedColor: number = 0; // Asigna un valor por defecto si es necesario
   color: any = 0; // Asigna un valor por defecto
   quantity : number = 0;
   type : any = 0;
@@ -47,6 +47,8 @@ export class ApplicationValuesComponent  implements OnInit {
 
   minPressure = 1;
   maxPressure = 20;
+
+  caudalObjetivo = 0;
 
 
   saveNozzles = 0;
@@ -257,7 +259,7 @@ export class ApplicationValuesComponent  implements OnInit {
   } */
 
   addNozzles(){
-    this.calculoConsumo();
+    
     if(!this.quantity)
       return;
     for(let i = 0; i < this.quantity; i++)
@@ -265,50 +267,59 @@ export class ApplicationValuesComponent  implements OnInit {
       console.log(this.nozzleConfig, "addNozzles");
       let unidadPresion = this.unitsPressure;
 
-      //console.log("NOZZLECONFIG", this.type , this.selectedColor, this.formData.value.pressure, this.unitsPressure,this.formData.value.unidadPresion);
-
-/*       let saveNozzles : Nozzles = {
-        id : 0,
-        type : this.type,
-        color : this.selectedColor,
-        pressure : this.formData.value.pressure,
-        pressure_unit : this.unitsPressure[0].value,
-        flow : 2.1,
-      } */
-      //await this.dbService.syncNozzlesData(saveNozzles);
-    setTimeout(() => this.updateSummary(null),200);
+      this.calculoConsumo();
+      this.updateCaudalObjetivoTotal();
   }
 
-  calculoConsumo(){
-    /* 1 : ROJO
-      2 : AZUL
-      5 : VERDE
-      6 : NEGRO
-      7 : ANARANJADO*/
+  calculoConsumo() {
+    let previousItem = null;
+    let currentItem = null;
+    let nextItem = null;
+    let nextNextItem = null;
+    let nextNextItem3 = null;
+    let nextNextItem4 = null;
 
-    console.log("PRESION DEL INPUT" , this.formData.value.pressure);
-    let presionConvertida = convertPressureUnit(this.formData.value.pressure , UnitPressureEnum.BAR , UnitPressureEnum.PSI)
-    console.log("PRESION CONVERTIDA" , presionConvertida);
-    console.log("COLOR DEL SELECT" , this.selectedColor);
+    console.log(this.selectedColor);
+
+    const colorSeleccionado = this.selectedColor;
+    let encontrado = false; // Bandera para verificar si se ha encontrado un resultado
     
- /*    this.pressure_values = this.nozzles.map(p => { return  {pressure : p.pressure, pressure_unit : p.pressure_unit , color : p.color}})
-    .filter((obj, index, self) =>
-      index === self.findIndex((o) => (
-        o.pressure === obj.pressure && o.pressure_unit === obj.pressure_unit && o.color === this.selectedColor
-      ))
-    );
- */
+    this.nozzles.forEach((item, index, array) => {
+        if (colorSeleccionado == item.color && !encontrado) {
+            currentItem = item;
 
-    this.nozzles.forEach(item => {
-      if (presionConvertida >= item.pressure && presionConvertida <= item.pressure  && this.selectedColor == item.color) {
-          console.log("condicion aceptada", item);
-      }
+            if (previousItem && nextItem && nextNextItem && nextNextItem3 && nextNextItem4 && colorSeleccionado == item.color) {
+                let presionConvertida = convertPressureUnit(this.formData.value.pressure , UnitPressureEnum.BAR , UnitPressureEnum.PSI);
+                console.log("Presion convertida" , presionConvertida);
+
+                if (index > 0 && index < array.length - 3) {
+                    if (presionConvertida >= previousItem.pressure && presionConvertida <= nextItem.pressure) {
+                      this.caudalObjetivo = calcular_caudal_objetivo(previousItem.flow , presionConvertida, previousItem.pressure , nextItem.pressure , previousItem.pressure);
+                      console.log("caudal" , this.caudalObjetivo);
+                      encontrado = true; // Se ha encontrado un resultado, establece la bandera a true
+                    } else if (presionConvertida > nextItem.pressure && presionConvertida <= nextNextItem.pressure) {
+                      this.caudalObjetivo = calcular_caudal_objetivo(nextItem.flow , presionConvertida, nextItem.pressure , nextNextItem.pressure, nextNextItem.flow);
+                      console.log("caudal" , this.caudalObjetivo);
+                      encontrado = true; // Se ha encontrado un resultado, establece la bandera a true
+                    } else if (presionConvertida > nextNextItem.pressure && presionConvertida <= nextNextItem3.pressure) {
+                      this.caudalObjetivo = calcular_caudal_objetivo(nextNextItem.flow , presionConvertida, nextNextItem.pressure, nextNextItem3.pressure, nextNextItem3.flow);
+                      console.log("caudal" , this.caudalObjetivo);
+                      encontrado = true; // Se ha encontrado un resultado, establece la bandera a true
+                    } else if (presionConvertida > nextNextItem3.pressure && presionConvertida <= nextNextItem4.pressure) {
+                      this.caudalObjetivo = calcular_caudal_objetivo(nextNextItem3.flow , presionConvertida , nextNextItem3.pressure, nextNextItem4.pressure, nextNextItem4.flow );  
+                      console.log("caudal" , this.caudalObjetivo);
+                      encontrado = true; // Se ha encontrado un resultado, establece la bandera a true
+                    }
+                }
+            }
+            previousItem = currentItem;
+            nextItem = array[index + 1];
+            nextNextItem = array[index + 2];
+            nextNextItem3 = array[index + 3];
+            nextNextItem4 = array[index + 4];
+        }
     });
-    
-   
-
-      //this.changeUnit({value: this.formData.value.pressure});
-  }
+}
 
   /**
    * This function is responsible for removing a specific nozzle from the nozzle configuration.
@@ -326,9 +337,12 @@ export class ApplicationValuesComponent  implements OnInit {
         {
           text: 'Si',
           handler: () => {
+            // Eliminar la boquilla del arreglo de configuración de boquillas
             this.nozzleConfig = this.nozzleConfig.filter(p => p.number != nozzleNumber);
+            // Reordenar las boquillas
             this.handleReorder();
-            this.updateSummary(null);
+            // Actualizar el caudal objetivo total restando el caudal de la boquilla eliminada
+            this.updateCaudalObjetivoTotal();
           }
         },
         {
@@ -360,6 +374,19 @@ export class ApplicationValuesComponent  implements OnInit {
     return !isNaN(value!) ? value! : nonNullValue;
   }
 
+    updateCaudalObjetivoTotal() {
+      // Sumar todos los caudales objetivos de las boquillas
+      this.caudalObjetivo = this.nozzleConfig.reduce((total, nozzle) => {
+          return total + this.caudalObjetivo;
+      }, 0);
+
+      this.total = this.caudalObjetivo;
+      console.log("Caudal objetivo total: ", this.caudalObjetivo);
+
+      // Actualizar el total en la interfaz de usuario
+      this.updateSummary(null);
+    }
+
   /**
    * The below code is a function that updates the total flow rate of all nozzles based on their configuration and current flow rate.
    * It does this by first mapping the nozzle configuration to their respective flow rates using the find method to match nozzle color and type.
@@ -368,22 +395,16 @@ export class ApplicationValuesComponent  implements OnInit {
    */
   updateSummary(_event : any){
     this.invalid_rows = 0;
-    // console.log(this.nozzleConfig, "updateSummary");
-    //console.log("nozzleConfig" , this.nozzleConfig);
-    if(this.nozzleConfig.length > 0)
- 
-      this.total = this.nozzleConfig
-        .map(p => this.isNullOrNaN(this.nozzles.find(
-          x => x.color == p.color && x.type == p.type && x.pressure == this.formData.value.pressure)?.flow,0,p.number))
-        .reduce((a,b)=>{ return a + b; },);
-    else
-      this.total = 0;
+    if(this.nozzleConfig.length > 0) {
+        this.total = parseFloat(this.caudalObjetivo.toFixed(2));
+        // Actualizar el total en la interfaz de usuario
+        //this.totalLabel = `${this.caudalObjetivo.toFixed(2)} L/min`;
 
-      //console.log("THIS.totla" , this.total);
-
-    this.totalLabel = `${this.total.toFixed(1)} L/min`;
+    } else {
+        this.totalLabel = "0 L/min";
+    }
+    this.totalLabel = `${this.total.toFixed(2)} L/min`;
   }
-
   /* changeUnit($event : any){
     // console.log("cambio de item");
     this.pressures_items = [];
